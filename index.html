@@ -51,8 +51,10 @@
       display: inline-block; padding: 10px 14px; border-radius: 12px; font-weight: 600;
       background: var(--accent); color: var(--accent-ink); border: 0;
       box-shadow: 0 8px 24px var(--ring);
+      cursor: pointer;
     }
     .cta:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .cta[disabled] { opacity: 0.6; cursor: not-allowed; }
 
     .hero { padding: 18px 0 8px; }
     .hero .meta { color: var(--muted); font-size: 14px; }
@@ -79,11 +81,15 @@
     .row { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
     @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
     .help { font-size: 12px; color: var(--muted); }
-    .status { font-size: 14px; }
+    .status { font-size: 14px; opacity: 0; transition: opacity 450ms ease; }
+    .status.show { opacity: 1; }
 
     /* Skip link */
     .skip-link { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
     .skip-link:focus { position: static; width: auto; height: auto; padding: 6px 10px; background: #fff; color: #000; border-radius: 6px; }
+
+    /* Honeypot (visually hidden, accessible to AT) */
+    .honeypot { position: absolute; left: -10000px; top: auto; height: 0; width: 0; overflow: hidden; }
   </style>
 </head>
 <body>
@@ -112,7 +118,7 @@
 
     <section class="card" aria-labelledby="scope">
       <h2 id="scope">Scope</h2>
-      <p>This policy applies to the Onigirli and the Cosmic Quest mobile app on Android and iOS, any in‑game features such as ads and in‑app purchases, and related support pages we operate.</p>
+      <p>This policy applies to the Onigirli and the Cosmic Quest mobile app on Android and iOS, any in-game features such as ads and in-app purchases, and related support pages we operate.</p>
     </section>
 
     <section class="card" aria-labelledby="collection">
@@ -120,7 +126,7 @@
       <ul>
         <li><strong>Personal data you provide</strong>: We do not require an account and we do not ask you to submit personal information inside the game.</li>
         <li><strong>Device and usage data</strong>: Our partners may collect limited technical data like device identifiers, IP address, app version, approximate location, and interaction events to deliver ads, prevent fraud, and improve performance.</li>
-        <li><strong>Purchase data</strong>: In‑app purchases are processed by Google Play or the Apple App Store. We do not receive your full payment details.</li>
+        <li><strong>Purchase data</strong>: In-app purchases are processed by Google Play or the Apple App Store. We do not receive your full payment details.</li>
       </ul>
     </section>
 
@@ -128,14 +134,14 @@
       <h2 id="use">How we use data</h2>
       <ul>
         <li>To operate the app and its features.</li>
-        <li>To show non‑personalized or contextual ads where available, and measure their performance.</li>
+        <li>To show non-personalized or contextual ads where available, and measure their performance.</li>
         <li>To detect, prevent, and address technical issues and abuse.</li>
-        <li>To process optional in‑app purchases.</li>
+        <li>To process optional in-app purchases.</li>
       </ul>
     </section>
 
     <section class="card" aria-labelledby="partners">
-      <h2 id="partners">Third‑party partners</h2>
+      <h2 id="partners">Third-party partners</h2>
       <p>We integrate services that may collect data under their own policies. Review their notices here:</p>
       <ul>
         <li><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Play services</a></li>
@@ -147,8 +153,8 @@
     </section>
 
     <section class="card" aria-labelledby="iap">
-      <h2 id="iap">In‑app purchases</h2>
-      <p>Purchases are processed by the platform stores. We receive confirmation that a purchase was completed and may store a non‑identifying receipt token to restore purchases. We do not store payment card details.</p>
+      <h2 id="iap">In-app purchases</h2>
+      <p>Purchases are processed by the platform stores. We receive confirmation that a purchase was completed and may store a non-identifying receipt token to restore purchases. We do not store payment card details.</p>
     </section>
 
     <section class="card" aria-labelledby="kids">
@@ -160,7 +166,7 @@
       <h2 id="rights">Your choices</h2>
       <ul>
         <li><strong>Ads</strong>: Your device settings and platform consent dialogs control personalized advertising where available.</li>
-        <li><strong>Opt‑out</strong>: You can limit ad tracking in system settings on iOS and Android.</li>
+        <li><strong>Opt-out</strong>: You can limit ad tracking in system settings on iOS and Android.</li>
         <li><strong>Access or delete</strong>: Contact us and we will coordinate with partners as appropriate.</li>
       </ul>
     </section>
@@ -213,10 +219,16 @@
           <div class="help">No account needed. We reply from <strong>aaronfimple@gmail.com</strong>.</div>
         </div>
 
-        <button class="cta" type="submit">Send</button>
+        <!-- Anti-bot honeypot (should stay empty) -->
+        <div class="honeypot" aria-hidden="true">
+          <label for="website">Website</label>
+          <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <button class="cta" id="sendBtn" type="submit">Send</button>
         <div id="formStatus" class="status small" role="status" aria-live="polite"></div>
       </form>
-      <noscript><p class="small">JavaScript is required for the built‑in form. You can email us directly at <a href="mailto:aaronfimple@gmail.com">aaronfimple@gmail.com</a>.</p></noscript>
+      <noscript><p class="small">JavaScript is required for the built-in form. You can email us directly at <a href="mailto:aaronfimple@gmail.com">aaronfimple@gmail.com</a>.</p></noscript>
     </section>
   </main>
 
@@ -225,20 +237,21 @@
   </footer>
 
   <script>
-    // Small helpers to keep it fresh without editing code often
+    // Page init
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Replace placeholders easily by editing just these variables
     const CONFIG = {
-      email: 'aaronfimple@gmail.com',  // support email
-      studio: 'KaizoLabs',             // studio / developer name
-      contactFormUrl: '',              // optional: set to your serverless endpoint (e.g., Formspree) to POST instead of mailto
+      email: 'aaronfimple@gmail.com',
+      studio: 'KaizoLabs',
+      contactFormUrl: '', // Add your serverless endpoint to POST instead of mailto
+      rateLimitSeconds: 60, // per-browser cooldown between sends
+      dailyCap: 5,         // max sends per day per browser
+      minTimeOnPageMs: 5000 // block if submitted too quickly after load
     };
 
-    // Apply header + footer config
     document.getElementById('studio').textContent = CONFIG.studio;
 
-    // Contact button in header scrolls to the form
+    // Contact button smooth scroll
     const contactTop = document.getElementById('contactTop');
     if (contactTop) contactTop.addEventListener('click', (e) => {
       if (contactTop.getAttribute('href') === '#contact') {
@@ -247,22 +260,69 @@
       }
     });
 
-    // Form handler: mailto by default; optional POST if CONFIG.contactFormUrl is set
+    // Form handler
     const form = document.getElementById('contactFormEl');
     const statusEl = document.getElementById('formStatus');
+    const sendBtn = document.getElementById('sendBtn');
 
-    function setStatus(msg, tone='info') {
+    const pageLoadMs = Date.now();
+
+    function setStatus(msg, tone = 'info') {
       statusEl.textContent = msg;
       statusEl.style.color = tone === 'ok' ? 'var(--ok)' : tone === 'err' ? 'var(--err)' : 'var(--muted)';
+      statusEl.classList.add('show');
+      // Auto-fade reset
+      clearTimeout(setStatus._t);
+      setStatus._t = setTimeout(() => statusEl.classList.remove('show'), 2600);
     }
 
     function encodeRFC3986(str) {
       return encodeURIComponent(str).replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16));
     }
 
+    function getDailyKey() {
+      const d = new Date();
+      return `contactDaily:${d.getUTCFullYear()}-${d.getUTCMonth()+1}-${d.getUTCDate()}`;
+    }
+
+    function checkRateLimit() {
+      const now = Date.now();
+      const last = parseInt(localStorage.getItem('contactLastTs') || '0', 10);
+      const remaining = CONFIG.rateLimitSeconds - Math.floor((now - last) / 1000);
+      if (remaining > 0) return { ok: false, msg: `Please wait ${remaining}s before sending again.` };
+
+      const key = getDailyKey();
+      const count = parseInt(localStorage.getItem(key) || '0', 10);
+      if (count >= CONFIG.dailyCap) return { ok: false, msg: 'Daily message limit reached. Try again tomorrow.' };
+
+      if (now - pageLoadMs < CONFIG.minTimeOnPageMs) {
+        return { ok: false, msg: 'Please take a moment to fill the form before sending.' };
+      }
+
+      return { ok: true };
+    }
+
+    function bumpCounters() {
+      localStorage.setItem('contactLastTs', String(Date.now()));
+      const key = getDailyKey();
+      const count = parseInt(localStorage.getItem(key) || '0', 10) + 1;
+      localStorage.setItem(key, String(count));
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      // Rate limit + basic anti-bot checks
+      const websiteTrap = document.getElementById('website').value;
+      if (websiteTrap) {
+        setStatus('Submission blocked.', 'err');
+        return;
+      }
+      const rl = checkRateLimit();
+      if (!rl.ok) { setStatus(rl.msg, 'err'); return; }
+
       setStatus('Sending…');
+      sendBtn.disabled = true;
 
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
@@ -272,6 +332,7 @@
 
       if (!name || !email || !message) {
         setStatus('Please fill out name, email, and message.', 'err');
+        sendBtn.disabled = false;
         return;
       }
 
@@ -280,9 +341,32 @@
 
       try {
         if (CONFIG.contactFormUrl) {
-          const payload = { name, email, category, subject, message, game: 'Onigirli and the Cosmic Quest' };
+          const payload = { name, email, category, subject, message, game: 'Onigirli and the Cosmic Quest', ts: Date.now() };
           const res = await fetch(CONFIG.contactFormUrl, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
           });
           if (!res.ok) throw new Error('Network response was not ok');
-         
+          setStatus('Sent! Thanks for reaching out.', 'ok');
+          bumpCounters();
+          form.reset();
+        } else {
+          // Mailto fallback (no backend)
+          const mailto = `mailto:${CONFIG.email}?subject=${encodeRFC3986(composedSubject)}&body=${encodeRFC3986(body)}`;
+          window.location.href = mailto;
+          setStatus('Sent! Your email app should open.', 'ok');
+          bumpCounters();
+          form.reset();
+        }
+      } catch (err) {
+        console.error(err);
+        setStatus('Could not send. Please email us directly at ' + CONFIG.email + '.', 'err');
+      } finally {
+        // Re-enable after cooldown so users can send another later
+        setTimeout(() => { sendBtn.disabled = false; }, CONFIG.rateLimitSeconds * 1000);
+      }
+    });
+  </script>
+</body>
+</html>
