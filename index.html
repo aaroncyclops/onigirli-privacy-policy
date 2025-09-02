@@ -11,6 +11,7 @@
 
   <style>
     :root{
+      /* Theme */
       --bg:#0b0a0e;
       --panel:#14111a;
       --ink:#f7ecff;
@@ -19,44 +20,33 @@
       --accent-ink:#2b001f;
       --ring:rgba(255,122,214,.35);
       --pink-2:#ffa5e6;
-      --pink-3:#ffdaf5;
-      --purple:#b675ff;
-      --good:#79ffa7;
-      --rose:#ff8db6;
-      --gold:#ffe072;
+      --card-top:rgba(255,255,255,0.03);
+      --card-bot:rgba(255,255,255,0.00);
+      --card-border:rgba(255,255,255,0.08);
     }
 
-    *{box-sizing:border-box}
-    html,body{margin:0;height:100%}
+    /* Base */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{margin:0;min-height:100%}
+    html{background:var(--bg)}
     body{
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
-      background:
-        radial-gradient(1200px 800px at 70% -10%, #25182e 0%, var(--bg) 55%);
       color:var(--ink);
       line-height:1.6;
-      cursor:none;
+      background:var(--bg); /* canvas paints over this */
     }
-    @media (pointer:coarse){ body{cursor:auto} }
 
-    ::selection{
-      background: rgba(182,117,255,.45);
-      color:#27002b;
-    }
-    #selOverlay{position:fixed;inset:0;pointer-events:none;z-index:9998}
-    .selpill{
-      position:fixed;border-radius:10px;
-      background: rgba(182,117,255,.35);
-      box-shadow:0 0 0 1px rgba(182,117,255,.25) inset, 0 4px 12px rgba(0,0,0,.25);
-    }
+    ::selection{background: rgba(182,117,255,.35); color:#27002b}
 
     a{color:var(--pink-2);text-decoration:none}
     a:hover{text-decoration:underline}
     .wrap{max-width:880px;margin:0 auto;padding:24px}
 
+    /* Header */
     header{
       position:sticky;top:0;z-index:10;
-      backdrop-filter:blur(10px);
-      background:linear-gradient(180deg, rgba(20,17,26,.8), rgba(20,17,26,.4));
+      -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+      background:linear-gradient(180deg, rgba(20,17,26,.85), rgba(20,17,26,.55));
       border-bottom:1px solid rgba(255,255,255,0.08);
     }
     .nav{display:flex;align-items:center;justify-content:space-between}
@@ -70,26 +60,19 @@
     .cta{
       display:inline-block;padding:10px 14px;border-radius:14px;font-weight:700;
       background:var(--accent);color:var(--accent-ink);border:0;box-shadow:0 8px 24px var(--ring);
-      cursor:pointer;transform:translateZ(0);
+      cursor:pointer
     }
     .cta:focus{outline:2px solid var(--accent);outline-offset:2px}
 
+    /* Content */
     .hero{padding:18px 0 8px}
     .hero .meta{color:var(--muted);font-size:14px}
 
     .card{
-      position:relative;
-      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.00));
-      border:1px solid rgba(255,255,255,0.08);
+      background:linear-gradient(180deg,var(--card-top),var(--card-bot));
+      border:1px solid var(--card-border);
       border-radius:22px;padding:18px 20px;margin:14px 0;
       box-shadow:0 10px 30px rgba(0,0,0,0.35), 0 2px 0 rgba(255,255,255,0.05) inset;
-    }
-    .card::before{
-      content:"";position:absolute;inset:-1px;border-radius:24px;
-      background:conic-gradient(from 220deg, rgba(255,122,214,.25), transparent 50%, rgba(182,117,255,.25));
-      mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor; mask-composite: exclude;
-      padding:1px;pointer-events:none;opacity:.35;
     }
     .card h2{margin:6px 0 6px;font-size:20px}
     .card p,.card li{color:#f1e6ff}
@@ -98,6 +81,7 @@
     .small{color:var(--muted);font-size:13px}
     footer{margin:22px 0 40px;color:var(--muted)}
 
+    /* Skip link */
     .skip-link{
       position:absolute;top:8px;left:8px;z-index:9999;background:#fff;color:#000;border-radius:10px;padding:6px 10px;
       text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.25);
@@ -105,18 +89,16 @@
     }
     .skip-link:focus,.skip-link:focus-visible{clip:auto;clip-path:none;height:auto;width:auto}
 
+    /* Form */
     form.contact{display:grid;gap:14px;margin-top:10px}
     .row{display:grid;gap:12px;grid-template-columns:1fr 1fr}
     @media (max-width:640px){.row{grid-template-columns:1fr}}
     label{font-size:14px;color:var(--muted);display:block;margin-bottom:4px}
 
-    input[type="text"], textarea{
+    input[type="text"], textarea, select{
       width:100%;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,0.1);
       background:var(--panel);color:var(--ink);
-      box-shadow:0 1px 0 rgba(255,255,255,0.06) inset, 0 0 0 0 var(--ring);
-    }
-    input[type="text"]:focus, textarea:focus{
-      outline:none;box-shadow:0 0 0 3px rgba(255,122,214,.35), 0 0 0 6px rgba(182,117,255,.15);
+      box-shadow:0 1px 0 rgba(255,255,255,0.06) inset;
     }
     textarea{min-height:140px;resize:vertical}
 
@@ -125,56 +107,230 @@
 
     .hp{position:absolute;left:-9999px;top:-9999px;height:0;width:0;overflow:hidden}
 
-    .toast{
-      opacity:0;transform:translateY(6px);
-      background:rgba(255,122,214,0.12);border:1px solid rgba(255,122,214,0.35);
-      color:var(--ink);padding:10px 12px;border-radius:12px;font-size:14px;margin-top:10px;
-    }
-    .toast.show{opacity:1;transform:translateY(0)}
-
-    .select{position:relative}
-    .select [data-native]{display:none}
-    .select-btn{
-      width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;
-      padding:12px 14px;border-radius:14px;background:var(--panel);color:var(--ink);
-      border:1px solid rgba(255,255,255,0.1);cursor:pointer;
-      box-shadow:0 1px 0 rgba(255,255,255,0.06) inset;
-    }
-    .select-btn:focus{outline:none;box-shadow:0 0 0 3px rgba(255,122,214,.35)}
-    .select-arrow{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid var(--ink);opacity:.7}
-    .select.open .select-arrow{transform:rotate(180deg)}
-    .select-list{
-      position:absolute;z-index:20;left:0;right:0;top:calc(100% + 8px);
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
-      border:1px solid rgba(255,255,255,0.1);border-radius:14px;overflow:auto;max-height:240px;
-      box-shadow:0 14px 40px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.05) inset;
-      padding:6px;display:none;
-    }
-    .select.open .select-list{display:block}
-    .select-option{
-      padding:10px 12px;border-radius:10px;cursor:pointer;color:#f1e6ff;
-    }
-    .select-option[aria-selected="true"]{background:rgba(255,122,214,.18)}
-    .select-option:hover{background:rgba(182,117,255,.18)}
-
-    #ogCursor{
-      position:fixed;left:0;top:0;transform:translate(-50%,-50%);
-      width:28px;height:28px;pointer-events:none;z-index:99999;
-      filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));
-      mix-blend-mode:normal;
-    }
-    @media (pointer:coarse){ #ogCursor{display:none} }
-    body.is-pressing #ogCursor{transform:translate(-50%,-50%) scale(.92)}
-
-    .pop{
-      position:fixed;left:0;top:0;width:6px;height:9px;border-radius:4px/5px;pointer-events:none;
-    }
-
-    #bg3d{
-      position:fixed;inset:0;z-index:-2;display:block;
-    }
+    /* Background canvas */
+    #bgfx{position:fixed;inset:0;z-index:-1;display:block}
   </style>
 </head>
 <body>
+  <canvas id="bgfx" aria-hidden="true"></canvas>
+
+  <a class="skip-link" href="#content">Skip to content</a>
+
+  <header>
+    <div class="wrap nav">
+      <div class="brand" aria-label="Onigirli and the Cosmic Quest Privacy Policy and Contact Page">
+        <div class="logo" aria-hidden="true">🍙</div>
+        <span>Onigirli and the Cosmic Quest Privacy Policy and Contact Page</span>
+      </div>
+      <nav>
+        <a class="cta" href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="content" class="wrap" role="main" tabindex="-1">
+    <section class="hero" aria-label="Effective date">
+      <div class="meta">Effective date: <time datetime="2025-08-30">August 30, 2025</time></div>
+    </section>
+
+    <section class="card" aria-labelledby="who">
+      <h2 id="who">Who we are</h2>
+      <p><strong>Onigirli and the Cosmic Quest</strong> is developed and published by <em>KaizoLabs</em> ("we," "us," or "our"). This page explains how the game handles information.</p>
+    </section>
+
+    <section class="card" aria-labelledby="scope">
+      <h2 id="scope">Scope</h2>
+      <p>This policy applies to the Onigirli and the Cosmic Quest mobile app on Android and iOS, any in‑game features such as ads and in‑app purchases, and related support pages we operate.</p>
+    </section>
+
+    <section class="card" aria-labelledby="collection">
+      <h2 id="collection">What we collect</h2>
+      <ul>
+        <li><strong>Personal data you provide</strong>: We do not require an account and we do not ask you to submit personal information inside the game.</li>
+        <li><strong>Device and usage data</strong>: Our partners may collect limited technical data like device identifiers, IP address, app version, approximate location, and interaction events to deliver ads, prevent fraud, and improve performance.</li>
+        <li><strong>Purchase data</strong>: In‑app purchases are processed by Google Play or the Apple App Store. We do not store your payment card details.</li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="use">
+      <h2 id="use">How we use data</h2>
+      <ul>
+        <li>To operate the app and its features.</li>
+        <li>To show non‑personalized or contextual ads where available, and measure their performance.</li>
+        <li>To detect, prevent, and address technical issues and abuse.</li>
+        <li>To process optional in‑app purchases.</li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="partners">
+      <h2 id="partners">Third‑party partners</h2>
+      <p>We integrate services that may collect data under their own policies. Review their notices here:</p>
+      <ul>
+        <li><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Play services</a></li>
+                <li><a href="https://developers.is.com/ironsource-mobile/air/ironsource-mobile-privacy-policy/" target="_blank" rel="noopener">Unity LevelPlay / ironSource</a></li>
+        <li><a href="https://unity.com/legal/privacy-policy" target="_blank" rel="noopener">Unity</a></li>
+        <li><a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">Apple App Store</a></li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="iap">
+      <h2 id="iap">In‑app purchases</h2>
+      <p>Purchases are processed by the platform stores. We receive confirmation that a purchase was completed and may store a non‑identifying receipt token to restore purchases.</p>
+    </section>
+
+    <section class="card" aria-labelledby="kids">
+      <h2 id="kids">Children</h2>
+      <p>The game is intended for a general audience. It is not directed to children under 13. If you believe a child provided personal data to our partners, contact us and we will work with them to address the issue.</p>
+    </section>
+
+    <section class="card" aria-labelledby="rights">
+      <h2 id="rights">Your choices</h2>
+      <ul>
+        <li><strong>Ads</strong>: Your device settings and platform consent dialogs control personalized advertising where available.</li>
+        <li><strong>Opt‑out</strong>: You can limit ad tracking in system settings on iOS and Android.</li>
+        <li><strong>Access or delete</strong>: Contact us and we will coordinate with partners as appropriate.</li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="security">
+      <h2 id="security">Security</h2>
+      <p>We take reasonable steps to protect data handled through our integrations. No method of transmission or storage is perfectly secure.</p>
+    </section>
+
+    <section class="card" aria-labelledby="changes">
+      <h2 id="changes">Changes to this policy</h2>
+      <p>We may update this page to reflect app or legal changes. The <em>Effective date</em> above shows the latest revision.</p>
+    </section>
+
+    <section class="card" aria-labelledby="contact" style="overflow:visible;">
+      <h2 id="contact">Contact</h2>
+      <p>For questions, requests, or feedback, email <a id="contactInline" href="mailto:kaizolabs@gmail.com">kaizolabs@gmail.com</a> or use the form.</p>
+
+      <form id="contactForm" class="contact" novalidate>
+        <!-- Honeypot -->
+        <div class="hp" aria-hidden="true">
+          <label for="website">Website</label>
+          <input id="website" name="website" type="text" autocomplete="off" tabindex="-1" />
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="category">Category</label>
+            <select id="category" name="category">
+              <option value="Purchases" selected>Purchases</option>
+              <option value="Bug Report">Bug Report</option>
+              <option value="Suggestions">Suggestions</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="subject">Subject (optional)</label>
+            <input id="subject" name="subject" type="text" inputmode="text" autocomplete="off" placeholder="Short summary" />
+          </div>
+        </div>
+
+        <div>
+          <label for="message">Message</label>
+          <textarea id="message" name="message" required placeholder="Tell us what you need help with..."></textarea>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="cta">🍙 Send</button>
+          <div class="note">Your email app opens with a prefilled message.</div>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <div>© <span id="year"></span> <span id="studio"></span>. All rights reserved.</div>
+  </footer>
+
+  <script>
+    // Minimal setup only
+    const CONTACT_EMAIL = 'kaizolabs@gmail.com';
+    const STUDIO_NAME   = 'KaizoLabs';
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+    document.getElementById('studio').textContent = STUDIO_NAME;
+
+    // Simple mailto form submit (no animations, no localStorage)
+    const form = document.getElementById('contactForm');
+    if(form){
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const hp = document.getElementById('website');
+        if(hp && hp.value) return; // bot trap
+
+        const category = document.getElementById('category').value || 'Other';
+        const subject  = (document.getElementById('subject').value||'').trim() || 'No subject';
+        const message  = (document.getElementById('message').value||'').trim();
+        if(!message){ alert('Please enter a message.'); return; }
+
+        const fullSubject = `[Onigirli Support] ${category} - ${subject}`;
+        const lines = [
+          `Category: ${category}`,
+          '',
+          message,
+          '',
+          '---',
+          `From: ${STUDIO_NAME} website`,
+          `Time: ${new Date().toISOString()}`
+        ];
+        const body = encodeURIComponent(lines.join('\n'));
+        const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(fullSubject)}&body=${body}`;
+        window.location.href = mailto;
+        form.reset();
+      });
+    }
+
+    // Lightweight dynamic background: drawn on scroll/resize only (no animations)
+    (function(){
+      const canvas = document.getElementById('bgfx');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const DPR = Math.min(2, window.devicePixelRatio || 1);
+      let w=0,h=0;
+
+      function resize(){
+        w = canvas.clientWidth = window.innerWidth;
+        h = canvas.clientHeight = window.innerHeight;
+        canvas.width = w*DPR; canvas.height = h*DPR;
+        ctx.setTransform(DPR,0,0,DPR,0,0);
+        draw();
+      }
+
+      function draw(){
+        ctx.clearRect(0,0,w,h);
+        // Base vertical gradient
+        const g = ctx.createLinearGradient(0,0,0,h);
+        g.addColorStop(0,'#1a1320');
+        g.addColorStop(1,'#0b0a0e');
+        ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+
+        // Scroll‑reactive glows
+        const y = (window.scrollY||0) * 0.15;
+        const r1 = ctx.createRadialGradient(w*0.75, -80 + y, 50, w*0.75, -80 + y, 420);
+        r1.addColorStop(0,'rgba(255,122,214,0.35)');
+        r1.addColorStop(1,'rgba(255,122,214,0.0)');
+        ctx.fillStyle = r1; ctx.fillRect(0,0,w,h);
+
+        const r2 = ctx.createRadialGradient(w*0.2, h*0.9 + y*0.5, 30, w*0.2, h*0.9 + y*0.5, 360);
+        r2.addColorStop(0,'rgba(182,117,255,0.28)');
+        r2.addColorStop(1,'rgba(182,117,255,0.0)');
+        ctx.fillStyle = r2; ctx.fillRect(0,0,w,h);
+
+        // Tiny static stars
+        ctx.globalAlpha = 0.06;
+        for(let i=0;i<80;i++){ const sx=(i*73)%w, sy=(i*127)%h; ctx.fillRect(sx,sy,1,1); }
+        ctx.globalAlpha = 1;
+      }
+
+      window.addEventListener('resize', resize);
+      window.addEventListener('scroll', draw, {passive:true});
+      resize();
+    })();
+  </script>
 </body>
 </html>
