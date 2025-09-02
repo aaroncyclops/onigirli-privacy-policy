@@ -11,18 +11,16 @@
 
   <style>
     :root{
-      /* PINK THEME */
       --bg:#0b0a0e;
       --panel:#14111a;
       --ink:#f7ecff;
       --muted:#c2a9cf;
-      --accent:#ff7ad6;         /* main pink */
+      --accent:#ff7ad6;
       --accent-ink:#2b001f;
       --ring:rgba(255,122,214,.35);
-
       --pink-2:#ffa5e6;
       --pink-3:#ffdaf5;
-      --purple:#b675ff;         /* selection hue */
+      --purple:#b675ff;
       --good:#79ffa7;
       --rose:#ff8db6;
       --gold:#ffe072;
@@ -36,16 +34,14 @@
         radial-gradient(1200px 800px at 70% -10%, #25182e 0%, var(--bg) 55%);
       color:var(--ink);
       line-height:1.6;
-      cursor:none; /* we render the onigiri cursor */
+      cursor:none;
     }
-    @media (pointer:coarse){ body{cursor:auto} } /* show OS cursor on touch */
+    @media (pointer:coarse){ body{cursor:auto} }
 
-    /* Text selection */
     ::selection{
       background: rgba(182,117,255,.45);
       color:#27002b;
     }
-    /* Overlay pills for rounded selection edges */
     #selOverlay{position:fixed;inset:0;pointer-events:none;z-index:9998}
     .selpill{
       position:fixed;border-radius:10px;
@@ -69,14 +65,13 @@
       width:36px;height:36px;border-radius:12px;display:grid;place-items:center;
       background:conic-gradient(from 180deg at 50% 50%, #ff7ad6, #b675ff, #ff7ad6);
       box-shadow:0 0 0 3px rgba(255,255,255,0.06) inset, 0 6px 24px rgba(255,122,214,0.25);
-      color:#2b001f;font-weight:900;animation:floaty 6s ease-in-out infinite;
+      color:#2b001f;font-weight:900;
     }
     .cta{
       display:inline-block;padding:10px 14px;border-radius:14px;font-weight:700;
       background:var(--accent);color:var(--accent-ink);border:0;box-shadow:0 8px 24px var(--ring);
       cursor:pointer;transform:translateZ(0);
     }
-    .cta:hover{animation:wobble .3s ease}
     .cta:focus{outline:2px solid var(--accent);outline-offset:2px}
 
     .hero{padding:18px 0 8px}
@@ -94,7 +89,7 @@
       background:conic-gradient(from 220deg, rgba(255,122,214,.25), transparent 50%, rgba(182,117,255,.25));
       mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
       -webkit-mask-composite: xor; mask-composite: exclude;
-      padding:1px;pointer-events:none;opacity:.35;animation:slowspin 12s linear infinite;
+      padding:1px;pointer-events:none;opacity:.35;
     }
     .card h2{margin:6px 0 6px;font-size:20px}
     .card p,.card li{color:#f1e6ff}
@@ -103,7 +98,6 @@
     .small{color:var(--muted);font-size:13px}
     footer{margin:22px 0 40px;color:var(--muted)}
 
-    /* Skip link (hidden until focused) */
     .skip-link{
       position:absolute;top:8px;left:8px;z-index:9999;background:#fff;color:#000;border-radius:10px;padding:6px 10px;
       text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.25);
@@ -111,7 +105,6 @@
     }
     .skip-link:focus,.skip-link:focus-visible{clip:auto;clip-path:none;height:auto;width:auto}
 
-    /* Inputs */
     form.contact{display:grid;gap:14px;margin-top:10px}
     .row{display:grid;gap:12px;grid-template-columns:1fr 1fr}
     @media (max-width:640px){.row{grid-template-columns:1fr}}
@@ -121,32 +114,26 @@
       width:100%;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,0.1);
       background:var(--panel);color:var(--ink);
       box-shadow:0 1px 0 rgba(255,255,255,0.06) inset, 0 0 0 0 var(--ring);
-      transition:box-shadow .25s ease, transform .08s ease;
     }
     input[type="text"]:focus, textarea:focus{
       outline:none;box-shadow:0 0 0 3px rgba(255,122,214,.35), 0 0 0 6px rgba(182,117,255,.15);
-      animation:focusPulse 1.2s ease-out infinite;
     }
     textarea{min-height:140px;resize:vertical}
 
     .actions{display:flex;align-items:center;gap:10px}
     .note{color:var(--muted);font-size:12px}
 
-    /* Honeypot */
     .hp{position:absolute;left:-9999px;top:-9999px;height:0;width:0;overflow:hidden}
 
-    /* Toast */
     .toast{
       opacity:0;transform:translateY(6px);
-      transition:opacity .35s ease, transform .35s ease;
       background:rgba(255,122,214,0.12);border:1px solid rgba(255,122,214,0.35);
       color:var(--ink);padding:10px 12px;border-radius:12px;font-size:14px;margin-top:10px;
     }
     .toast.show{opacity:1;transform:translateY(0)}
 
-    /* Custom select (Category) */
     .select{position:relative}
-    .select [data-native]{display:none} /* keep hidden native select for syncing */
+    .select [data-native]{display:none}
     .select-btn{
       width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;
       padding:12px 14px;border-radius:14px;background:var(--panel);color:var(--ink);
@@ -163,536 +150,31 @@
       box-shadow:0 14px 40px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.05) inset;
       padding:6px;display:none;
     }
-    .select.open .select-list{display:block;animation:menuIn .12s ease}
+    .select.open .select-list{display:block}
     .select-option{
       padding:10px 12px;border-radius:10px;cursor:pointer;color:#f1e6ff;
     }
     .select-option[aria-selected="true"]{background:rgba(255,122,214,.18)}
     .select-option:hover{background:rgba(182,117,255,.18)}
 
-    /* Onigiri cursor */
     #ogCursor{
       position:fixed;left:0;top:0;transform:translate(-50%,-50%);
       width:28px;height:28px;pointer-events:none;z-index:99999;
       filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));
-      transition:transform .06s linear;
       mix-blend-mode:normal;
     }
     @media (pointer:coarse){ #ogCursor{display:none} }
     body.is-pressing #ogCursor{transform:translate(-50%,-50%) scale(.92)}
 
-    /* Confetti grains on submit */
     .pop{
       position:fixed;left:0;top:0;width:6px;height:9px;border-radius:4px/5px;pointer-events:none;
-      animation:pop 700ms ease-out forwards;
     }
 
-    /* Canvas background */
     #bg3d{
       position:fixed;inset:0;z-index:-2;display:block;
-    }
-
-    /* Animations */
-    @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-    @keyframes slowspin{to{transform:rotate(1turn)}}
-    @keyframes wobble{16%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}100%{transform:rotate(0)}}
-    @keyframes focusPulse{
-      0%{box-shadow:0 0 0 3px rgba(255,122,214,.35), 0 0 0 6px rgba(182,117,255,.15)}
-      60%{box-shadow:0 0 0 6px rgba(255,122,214,.15), 0 0 0 10px rgba(182,117,255,.08)}
-      100%{box-shadow:0 0 0 3px rgba(255,122,214,.35), 0 0 0 6px rgba(182,117,255,.15)}
-    }
-    @keyframes pop{
-      0%{opacity:1;transform:translate(var(--x,0),var(--y,0)) scale(1)}
-      100%{opacity:0;transform:translate(calc(var(--x,0) * 2), calc(var(--y,0) - 60px)) scale(.6)}
-    }
-    @keyframes menuIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-
-    /* Reduced motion */
-    @media (prefers-reduced-motion:reduce){
-      .logo,.card::before,.select.open .select-list{animation:none}
     }
   </style>
 </head>
 <body>
-  <!-- purple rounded selection overlay -->
-  <div id="selOverlay" aria-hidden="true"></div>
-
-  <!-- canvas background with rotating onigiri -->
-  <canvas id="bg3d"></canvas>
-
-  <!-- custom onigiri cursor -->
-  <div id="ogCursor" aria-hidden="true">
-    <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M32 6 C28 6, 24 10, 22 14 L6 42 C4 45, 5 50, 8 52 C10 54, 14 56, 18 56 L46 56 C50 56, 54 54, 56 52 C59 50, 60 45, 58 42 L42 14 C40 10, 36 6, 32 6 Z" fill="#fff"/>
-      <rect x="23" y="38" width="18" height="12" rx="4" fill="#0e0b12"/>
-      <path d="M32 6 C28 6, 24 10, 22 14 L6 42 C4 45, 5 50, 8 52 C10 54, 14 56, 18 56 L46 56 C50 56, 54 54, 56 52 C59 50, 60 45, 58 42 L42 14 C40 10, 36 6, 32 6 Z" stroke="rgba(0,0,0,.25)" stroke-width="2"/>
-    </svg>
-  </div>
-
-  <a class="skip-link" href="#content">Skip to content</a>
-
-  <header>
-    <div class="wrap nav">
-      <div class="brand" aria-label="Onigirli and the Cosmic Quest Privacy Policy and Contact Page">
-        <div class="logo" aria-hidden="true">🍙</div>
-        <span>Onigirli and the Cosmic Quest Privacy Policy and Contact Page</span>
-      </div>
-      <nav>
-        <a class="cta" id="contactTop" href="#contact">Contact</a>
-      </nav>
-    </div>
-  </header>
-
-  <main id="content" class="wrap" role="main" tabindex="-1">
-    <section class="hero" aria-label="Effective date">
-      <div class="meta">Effective date: <time datetime="2025-08-30">August 30, 2025</time></div>
-    </section>
-
-    <section class="card" aria-labelledby="who">
-      <h2 id="who">Who we are</h2>
-      <p><strong>Onigirli and the Cosmic Quest</strong> is developed and published by <em>KaizoLabs</em> ("we," "us," or "our"). This page explains how the game handles information.</p>
-    </section>
-
-    <section class="card" aria-labelledby="scope">
-      <h2 id="scope">Scope</h2>
-      <p>This policy applies to the Onigirli and the Cosmic Quest mobile app on Android and iOS, any in-game features such as ads and in-app purchases, and related support pages we operate.</p>
-    </section>
-
-    <section class="card" aria-labelledby="collection">
-      <h2 id="collection">What we collect</h2>
-      <ul>
-        <li><strong>Personal data you provide</strong>: We do not require an account and we do not ask you to submit personal information inside the game.</li>
-        <li><strong>Device and usage data</strong>: Our partners may collect limited technical data like device identifiers, IP address, app version, approximate location, and interaction events to deliver ads, prevent fraud, and improve performance.</li>
-        <li><strong>Purchase data</strong>: In-app purchases are processed by Google Play or the Apple App Store. We do not store your payment card details.</li>
-      </ul>
-    </section>
-
-    <section class="card" aria-labelledby="use">
-      <h2 id="use">How we use data</h2>
-      <ul>
-        <li>To operate the app and its features.</li>
-        <li>To show non-personalized or contextual ads where available, and measure their performance.</li>
-        <li>To detect, prevent, and address technical issues and abuse.</li>
-        <li>To process optional in-app purchases.</li>
-      </ul>
-    </section>
-
-    <section class="card" aria-labelledby="partners">
-      <h2 id="partners">Third-party partners</h2>
-      <p>We integrate services that may collect data under their own policies. Review their notices here:</p>
-      <ul>
-        <li><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Play services</a></li>
-        <li><a href="https://developers.google.com/admob/ump/android/overview" target="_blank" rel="noopener">Google UMP (consent on Android)</a></li>
-        <li><a href="https://ironsrc.com/privacy-policy/" target="_blank" rel="noopener">Unity LevelPlay / ironSource</a></li>
-        <li><a href="https://unity.com/legal/privacy-policy" target="_blank" rel="noopener">Unity</a></li>
-        <li><a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">Apple App Store</a></li>
-      </ul>
-    </section>
-
-    <section class="card" aria-labelledby="iap">
-      <h2 id="iap">In-app purchases</h2>
-      <p>Purchases are processed by the platform stores. We receive confirmation that a purchase was completed and may store a non-identifying receipt token to restore purchases.</p>
-    </section>
-
-    <section class="card" aria-labelledby="kids">
-      <h2 id="kids">Children</h2>
-      <p>The game is intended for a general audience. It is not directed to children under 13. If you believe a child provided personal data to our partners, contact us and we will work with them to address the issue.</p>
-    </section>
-
-    <section class="card" aria-labelledby="rights">
-      <h2 id="rights">Your choices</h2>
-      <ul>
-        <li><strong>Ads</strong>: Your device settings and platform consent dialogs control personalized advertising where available.</li>
-        <li><strong>Opt-out</strong>: You can limit ad tracking in system settings on iOS and Android.</li>
-        <li><strong>Access or delete</strong>: Contact us and we will coordinate with partners as appropriate.</li>
-      </ul>
-    </section>
-
-    <section class="card" aria-labelledby="security">
-      <h2 id="security">Security</h2>
-      <p>We take reasonable steps to protect data handled through our integrations. No method of transmission or storage is perfectly secure.</p>
-    </section>
-
-    <section class="card" aria-labelledby="changes">
-      <h2 id="changes">Changes to this policy</h2>
-      <p>We may update this page to reflect app or legal changes. The <em>Effective date</em> above shows the latest revision.</p>
-    </section>
-
-    <section class="card" aria-labelledby="contact" style="overflow:visible;">
-      <h2 id="contact">Contact</h2>
-      <p>For questions, requests, or feedback, email <a id="contactInline" href="#">kaizolabs@gmail.com</a> or use the form.</p>
-
-      <form id="contactForm" class="contact" novalidate>
-        <!-- Honeypot -->
-        <div class="hp" aria-hidden="true">
-          <label for="website">Website</label>
-          <input id="website" name="website" type="text" autocomplete="off" tabindex="-1" />
-        </div>
-
-        <div class="row">
-          <div>
-            <label id="catLabel">Category</label>
-
-            <!-- Custom select -->
-            <div class="select" id="catSelect">
-              <select id="category" name="category" aria-hidden="true" tabindex="-1" data-native>
-                <option value="Purchases" selected>Purchases</option>
-                <option value="Bug Report">Bug Report</option>
-                <option value="Suggestions">Suggestions</option>
-                <option value="Other">Other</option>
-              </select>
-
-              <button type="button" class="select-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="catLabel catBtn">
-                <span id="catBtn">Purchases</span>
-                <span class="select-arrow" aria-hidden="true"></span>
-              </button>
-
-              <ul class="select-list" role="listbox" aria-labelledby="catLabel" tabindex="-1">
-                <li class="select-option" role="option" data-value="Purchases" aria-selected="true">Purchases</li>
-                <li class="select-option" role="option" data-value="Bug Report">Bug Report</li>
-                <li class="select-option" role="option" data-value="Suggestions">Suggestions</li>
-                <li class="select-option" role="option" data-value="Other">Other</li>
-              </ul>
-            </div>
-          </div>
-
-          <div>
-            <label for="subject">Subject (optional)</label>
-            <input id="subject" name="subject" type="text" inputmode="text" autocomplete="off" placeholder="Short summary" />
-          </div>
-        </div>
-
-        <div>
-          <label for="message">Message</label>
-          <textarea id="message" name="message" required placeholder="Tell us what you need help with..."></textarea>
-        </div>
-
-        <div class="actions">
-          <button type="submit" class="cta">🍙 Send</button>
-          <div class="note">Your email app opens with a prefilled message.</div>
-        </div>
-
-        <div id="toast" class="toast" role="status" aria-live="polite"></div>
-      </form>
-    </section>
-  </main>
-
-  <footer class="wrap">
-    <div>© <span id="year"></span> <span id="studio"></span>. All rights reserved.</div>
-  </footer>
-
-  <script>
-    // ------- Config -------
-    const CONTACT_EMAIL = 'kaizolabs@gmail.com';
-    const STUDIO_NAME   = 'KaizoLabs';
-
-    // ------- Helpers -------
-    const $ = (sel) => document.querySelector(sel);
-    const toastEl = $('#toast');
-
-    function showToast(msg, timeout = 2400){
-      if(!toastEl) return;
-      toastEl.textContent = msg;
-      toastEl.classList.add('show');
-      setTimeout(()=>toastEl.classList.remove('show'), timeout);
-    }
-
-    function setStaticBits(){
-      $('#year').textContent   = new Date().getFullYear();
-      $('#studio').textContent = STUDIO_NAME;
-
-      const contactHref = `mailto:${CONTACT_EMAIL}`;
-      const inline = $('#contactInline');
-      if(inline){ inline.href = contactHref; inline.textContent = CONTACT_EMAIL; }
-    }
-
-    // ----- Pink confetti -----
-    function popConfetti(x,y){
-      const colors = ['#fff','#ff7ad6','#b675ff','#ffe072','#ff8db6'];
-      for(let i=0;i<16;i++){
-        const el = document.createElement('span');
-        el.className = 'pop';
-        el.style.background = colors[i%colors.length];
-        el.style.left = x + 'px';
-        el.style.top  = y + 'px';
-        const ang = Math.random()*Math.PI*2;
-        const rad = 18 + Math.random()*24;
-        el.style.setProperty('--x', Math.cos(ang)*rad + 'px');
-        el.style.setProperty('--y', Math.sin(ang)*rad + 'px');
-        document.body.appendChild(el);
-        setTimeout(()=>el.remove(), 720);
-      }
-    }
-
-    // ----- Contact form -----
-    function bindForm(){
-      const form = $('#contactForm');
-      if(!form) return;
-
-      form.addEventListener('submit', function(e){
-        e.preventDefault();
-        const hp = $('#website'); if(hp && hp.value){ return; } // bot trap
-
-        const now = Date.now();
-        const last = Number(localStorage.getItem('contact_last')||0);
-        if(now - last < 60_000){ showToast('Please wait a moment and try again.'); return; }
-
-        const category = $('#category').value || 'Other';
-        const subject  = ($('#subject').value||'').trim() || 'No subject';
-        const message  = ($('#message').value||'').trim();
-        if(!message){ showToast('Please enter a message.'); return; }
-
-        const fullSubject = `[Onigirli Support] ${category} - ${subject}`;
-        const lines = [
-          `Category: ${category}`,
-          '',
-          message,
-          '',
-          '---',
-          `From: ${STUDIO_NAME} website`,
-          `Time: ${new Date().toISOString()}`
-        ];
-        const body = encodeURIComponent(lines.join('\n'));
-        const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(fullSubject)}&body=${body}`;
-
-        window.location.href = mailto;
-        localStorage.setItem('contact_last', String(now));
-        form.reset();
-        showToast('Opening your email app...');
-
-        const btn = form.querySelector('button[type="submit"]');
-        const rect = btn.getBoundingClientRect();
-        popConfetti(rect.left + rect.width/2, rect.top + rect.height/2);
-      });
-    }
-
-    // ----- Custom select (accessible-ish) -----
-    function bindCustomSelect(){
-      const root = $('#catSelect'); if(!root) return;
-      const native = root.querySelector('[data-native]');
-      const btn = root.querySelector('.select-btn');
-      const list = root.querySelector('.select-list');
-      const options = Array.from(list.querySelectorAll('.select-option'));
-      const btnLabel = root.querySelector('#catBtn');
-
-      function open(){ root.classList.add('open'); btn.setAttribute('aria-expanded','true'); list.focus(); }
-      function close(){ root.classList.remove('open'); btn.setAttribute('aria-expanded','false'); btn.focus(); }
-      function choose(opt){
-        options.forEach(o=>o.setAttribute('aria-selected','false'));
-        opt.setAttribute('aria-selected','true');
-        const val = opt.getAttribute('data-value');
-        btnLabel.textContent = val;
-        native.value = val; // keep the hidden select in sync
-        close();
-      }
-      btn.addEventListener('click', (e)=>{
-        e.preventDefault();
-        root.classList.contains('open') ? close() : open();
-      });
-      options.forEach(opt=>{
-        opt.addEventListener('click', ()=>choose(opt));
-        opt.addEventListener('mousemove', ()=>opt.focus && opt.focus());
-      });
-      list.addEventListener('keydown', (e)=>{
-        const idx = options.findIndex(o=>o.getAttribute('aria-selected')==='true');
-        if(e.key==='Escape'){ close(); }
-        else if(e.key==='ArrowDown'){ e.preventDefault(); const n = options[Math.min(options.length-1, idx+1)]||options[0]; choose(n); open(); }
-        else if(e.key==='ArrowUp'){ e.preventDefault(); const p = options[Math.max(0, idx-1)]||options[0]; choose(p); open(); }
-        else if(e.key==='Enter' || e.key===' '){ e.preventDefault(); close(); }
-      });
-      document.addEventListener('click', (e)=>{ if(!root.contains(e.target)) close(); });
-    }
-
-    // ----- Onigiri cursor follow -----
-    function bindCursor(){
-      const cursor = $('#ogCursor');
-      if(!cursor) return;
-      if(window.matchMedia('(pointer:coarse)').matches) return;
-      window.addEventListener('pointermove', (e)=>{
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top  = e.clientY + 'px';
-      }, {passive:true});
-      window.addEventListener('mousedown', ()=>document.body.classList.add('is-pressing'));
-      window.addEventListener('mouseup',   ()=>document.body.classList.remove('is-pressing'));
-      window.addEventListener('mouseleave',()=>document.body.classList.remove('is-pressing'));
-    }
-
-    // ----- Rounded selection overlay -----
-    function bindSelectionOverlay(){
-      const layer = $('#selOverlay');
-      function clear(){ layer.innerHTML=''; }
-      function draw(){
-        const sel = window.getSelection();
-        if(!sel || sel.isCollapsed){ clear(); return; }
-        clear();
-        const rects = sel.getRangeAt(0).getClientRects();
-        for(const r of rects){
-          const d = document.createElement('div');
-          d.className='selpill';
-          d.style.left = r.left + 'px';
-          d.style.top  = r.top  + 'px';
-          d.style.width  = r.width + 'px';
-          d.style.height = r.height + 'px';
-          layer.appendChild(d);
-        }
-      }
-      document.addEventListener('selectionchange', draw);
-      window.addEventListener('scroll', ()=>setTimeout(draw,0), {passive:true});
-      window.addEventListener('resize', ()=>setTimeout(draw,0));
-    }
-
-    // ----- Canvas background: rotating onigiri in faux-3D -----
-    function startCanvas(){
-      const canvas = document.getElementById('bg3d');
-      if(!canvas) return;
-      const ctx = canvas.getContext('2d');
-
-      const DPR = Math.min(2, window.devicePixelRatio || 1);
-      let W=0,H=0,cx=0,cy=0;
-      function resize(){
-        W = canvas.clientWidth = window.innerWidth;
-        H = canvas.clientHeight = window.innerHeight;
-        canvas.width = W*DPR; canvas.height = H*DPR;
-        ctx.setTransform(DPR,0,0,DPR,0,0);
-        cx = W/2; cy = H/2;
-      }
-      resize(); window.addEventListener('resize', resize);
-
-      // 3D helpers
-      const fov = 500; // perspective
-      function rotX(p,a){ const s=Math.sin(a), c=Math.cos(a); const [x,y,z]=p; return [x, y*c - z*s, y*s + z*c]; }
-      function rotY(p,a){ const s=Math.sin(a), c=Math.cos(a); const [x,y,z]=p; return [x*c + z*s, y, -x*s + z*c]; }
-      function project(p){
-        const [x,y,z]=p;
-        const d = fov/(z+fov);
-        return [x*d, y*d, d];
-      }
-
-      // Onigiri geometry in unit space
-      const tri = [
-        [0,-1,0],
-        [-0.92,0.86,0],
-        [0.92,0.86,0]
-      ];
-      const noriRect = { x:-0.35, y:0.35, w:0.7, h:0.28 };
-
-      const count = 24;
-      const balls = Array.from({length:count}, (_,i)=>({
-        x:(Math.random()-0.5)*1200,
-        y:(Math.random()-0.5)*800,
-        z:  Math.random()*800 + 200,
-        s:  Math.random()*40 + 28,
-        rx: Math.random()*Math.PI,
-        ry: Math.random()*Math.PI,
-        rvx:(Math.random()*0.6+0.2)*0.0015 * (Math.random()<.5?-1:1),
-        rvy:(Math.random()*0.6+0.2)*0.0012 * (Math.random()<.5?-1:1),
-        drift:(Math.random()*0.4+0.2),
-        hue: 300 + Math.random()*40 // pinkish lighting hue
-      }));
-
-      let last=0;
-      function tick(t){
-        requestAnimationFrame(tick);
-        const dt = (t-last)||16; last=t;
-
-        // bg gradient
-        const g = ctx.createLinearGradient(0,0,0,H);
-        g.addColorStop(0,'#1b1123');
-        g.addColorStop(1,'#0b0a0e');
-        ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
-
-        // subtle stars
-        ctx.globalAlpha = 0.08;
-        for(let i=0;i<40;i++){
-          const x = (i*97 % W), y = (i*151 % H);
-          ctx.fillRect(x,y,1,1);
-        }
-        ctx.globalAlpha = 1;
-
-        // draw each onigiri
-        for(const b of balls){
-          b.rx += b.rvx * dt;
-          b.ry += b.rvy * dt;
-          // gentle float
-          const fy = Math.sin(t*0.001*b.drift)*12;
-          const pos = [b.x, b.y+fy, b.z];
-
-          // project center
-          const center2D = project([pos[0], pos[1], pos[2]]);
-          const scale = center2D[2] * b.s;
-
-          const tx = cx + center2D[0];
-          const ty = cy + center2D[1];
-
-          ctx.save();
-          ctx.translate(tx,ty);
-          ctx.scale(scale,scale);
-
-          // lighting
-          const rim = 'rgba(255,255,255,.85)';
-          const face = 'rgba(255,255,255,.95)';
-          const stroke = 'rgba(0,0,0,.25)';
-
-          // rotate + draw triangle face
-          function tpt(p){
-            return project(rotY(rotX(p, b.rx), b.ry));
-          }
-          const A = tpt(tri[0]), B = tpt(tri[1]), C = tpt(tri[2]);
-
-          // drop shadow
-          ctx.save();
-          ctx.shadowColor = 'rgba(0,0,0,.45)';
-          ctx.shadowBlur = 16; ctx.shadowOffsetY = 6;
-          ctx.beginPath();
-          ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.lineTo(C[0],C[1]); ctx.closePath();
-          ctx.fillStyle = face; ctx.fill();
-          ctx.restore();
-
-          // soft rim
-          ctx.strokeStyle = stroke; ctx.lineWidth = 0.06;
-          ctx.beginPath();
-          ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.lineTo(C[0],C[1]); ctx.closePath();
-          ctx.stroke();
-
-          // tint
-          const lg = ctx.createLinearGradient(0, -1, 0, 1);
-          lg.addColorStop(0, `hsla(${b.hue},100%,85%,.20)`);
-          lg.addColorStop(1, `hsla(${b.hue+20},100%,75%,.05)`);
-          ctx.fillStyle = lg;
-          ctx.fill();
-
-          // nori (always on face plane, looks cute)
-          ctx.fillStyle = '#0e0b12';
-          const nr = noriRect;
-          ctx.fillRect(nr.x, nr.y, nr.w, nr.h);
-          ctx.restore();
-        }
-      }
-      requestAnimationFrame(tick);
-    }
-
-    // ----- Init selection overlay -----
-    function bindSelectionOverlayInit(){
-      bindSelectionOverlay();
-    }
-
-    // ----- Init all -----
-    setStaticBits();
-    bindForm();
-    bindCustomSelect();
-    bindCursor();
-    startCanvas();
-    bindSelectionOverlayInit();
-
-    // ----- Onigiri cursor position -----
-    (function(){
-      const cursor = document.getElementById('ogCursor');
-      if(!cursor || window.matchMedia('(pointer:coarse)').matches) return;
-      window.addEventListener('pointermove', (e)=>{
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top  = e.clientY + 'px';
-      }, {passive:true});
-    })();
-  </script>
 </body>
 </html>
