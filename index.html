@@ -9,100 +9,216 @@
   <meta property="og:description" content="Learn how Onigirli and the Cosmic Quest handles data, ads, and in-app purchases." />
   <meta property="og:type" content="website" />
   <style>
-    :root {
-      --bg: #0b0d10;
-      --panel: #12161c;
-      --ink: #e8eef6;
-      --muted: #9db0c6;
-      --accent: #5bd6ff;
-      --accent-ink: #00222b;
-      --ring: rgba(91, 214, 255, 0.35);
+    :root{
+      --bg:#0b0d10;
+      --panel:#12161c;
+      --ink:#e8eef6;
+      --muted:#9db0c6;
+      --accent:#5bd6ff;
+      --accent-ink:#00222b;
+      --ring:rgba(91,214,255,0.35);
+      --good:#79ffa7;
+      --rose:#ff8db6;
+      --gold:#ffe072;
     }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; height: 100%; }
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: radial-gradient(1200px 800px at 70% -10%, #0f1924 0%, var(--bg) 55%);
-      color: var(--ink);
-      line-height: 1.6;
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%}
+    body{
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 800px at 70% -10%, #0f1924 0%, var(--bg) 55%),
+        linear-gradient(180deg, #0b0d10 0%, #0b0d10 100%);
+      color:var(--ink);
+      line-height:1.6;
+      /* Hide OS cursor for custom onigiri cursor on fine pointers */
+      cursor:none;
     }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .wrap { max-width: 880px; margin: 0 auto; padding: 24px; }
+    @media (pointer:coarse){
+      body{cursor:auto;} /* show normal cursor on touch */
+    }
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .wrap{max-width:880px;margin:0 auto;padding:24px}
 
-    header {
-      position: sticky; top: 0; z-index: 10;
-      backdrop-filter: blur(10px);
-      background: linear-gradient(180deg, rgba(11,13,16,0.8), rgba(11,13,16,0.4));
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+    header{
+      position:sticky;top:0;z-index:10;
+      backdrop-filter:blur(10px);
+      background:linear-gradient(180deg, rgba(11,13,16,0.8), rgba(11,13,16,0.4));
+      border-bottom:1px solid rgba(255,255,255,0.06);
     }
-    .nav { display: flex; align-items: center; justify-content: space-between; }
-    .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: 0.2px; }
-    .logo {
-      width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center;
-      background: conic-gradient(from 180deg at 50% 50%, #3de0ff, #79ffa7, #3de0ff);
-      box-shadow: 0 0 0 3px rgba(255,255,255,0.06) inset, 0 6px 24px rgba(91,214,255,0.2);
-      color: #00222b; font-weight: 900;
+    .nav{display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.2px}
+    .logo{
+      width:36px;height:36px;border-radius:12px;display:grid;place-items:center;
+      background:conic-gradient(from 180deg at 50% 50%, #3de0ff, #79ffa7, #3de0ff);
+      box-shadow:0 0 0 3px rgba(255,255,255,0.06) inset, 0 6px 24px rgba(91,214,255,0.2);
+      color:#00222b;font-weight:900;
+      animation:floaty 6s ease-in-out infinite;
     }
-    .cta {
-      display: inline-block; padding: 10px 14px; border-radius: 12px; font-weight: 600;
-      background: var(--accent); color: #00222b; border: 0;
-      box-shadow: 0 8px 24px var(--ring);
-      cursor: pointer;
+    .cta{
+      display:inline-block;padding:10px 14px;border-radius:12px;font-weight:600;
+      background:var(--accent);color:#00222b;border:0;box-shadow:0 8px 24px var(--ring);
+      cursor:pointer;transform:translateZ(0);
     }
-    .cta:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .cta:hover{animation:wobble .3s ease}
+    .cta:focus{outline:2px solid var(--accent);outline-offset:2px}
 
-    .hero { padding: 18px 0 8px; }
-    .hero .meta { color: var(--muted); font-size: 14px; }
+    .hero{padding:18px 0 8px}
+    .hero .meta{color:var(--muted);font-size:14px}
 
-    .card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 20px;
-      padding: 18px 20px;
-      margin: 14px 0;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35), 0 2px 0 rgba(255,255,255,0.03) inset;
+    .card{
+      position:relative;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:20px;padding:18px 20px;margin:14px 0;
+      box-shadow:0 10px 30px rgba(0,0,0,0.35), 0 2px 0 rgba(255,255,255,0.03) inset;
     }
-    .card h2 { margin: 6px 0 6px; font-size: 20px; }
-    .card p, .card li { color: #d7e3f1; }
-    .card ul { padding-left: 18px; margin: 6px 0; }
+    .card::before{
+      content:"";position:absolute;inset:-1px;border-radius:22px;
+      background:conic-gradient(from 220deg, rgba(91,214,255,.25), transparent 50%, rgba(121,255,167,.25));
+      mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      padding:1px;pointer-events:none;
+      opacity:.35;
+      animation:slowspin 12s linear infinite;
+    }
+    .card h2{margin:6px 0 6px;font-size:20px}
+    .card p,.card li{color:#d7e3f1}
+    .card ul{padding-left:18px;margin:6px 0}
 
-    .small { color: var(--muted); font-size: 13px; }
-    footer { margin: 22px 0 40px; color: var(--muted); }
+    .small{color:var(--muted);font-size:13px}
+    footer{margin:22px 0 40px;color:var(--muted)}
+
+    /* Skip link - visually hidden until focused */
+    .skip-link{
+      position:absolute;top:8px;left:8px;z-index:9999;
+      background:#fff;color:#000;border-radius:10px;padding:6px 10px;
+      text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.25);
+      /* hide visually */
+      clip:rect(0 0 0 0);clip-path:inset(50%);height:1px;width:1px;overflow:hidden;white-space:nowrap;
+    }
+    .skip-link:focus, .skip-link:focus-visible{
+      clip:auto;clip-path:none;height:auto;width:auto;
+    }
 
     /* Contact form */
-    form.contact { display: grid; gap: 12px; margin-top: 10px; }
-    .row { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
-    @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
-    label { font-size: 14px; color: var(--muted); display: block; margin-bottom: 4px; }
-    input[type="text"], select, textarea {
-      width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);
-      background: var(--panel); color: var(--ink);
-      box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset;
+    form.contact{display:grid;gap:14px;margin-top:10px}
+    .row{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+    @media (max-width:640px){.row{grid-template-columns:1fr}}
+    label{font-size:14px;color:var(--muted);display:block;margin-bottom:4px}
+    input[type="text"], select, textarea{
+      width:100%;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,0.08);
+      background:var(--panel);color:var(--ink);
+      box-shadow:0 1px 0 rgba(255,255,255,0.03) inset, 0 0 0 0 rgba(91,214,255,0);
+      transition:box-shadow .25s ease, transform .08s ease;
     }
-    textarea { min-height: 120px; resize: vertical; }
+    input[type="text"]:focus, select:focus, textarea:focus{
+      outline:none;
+      box-shadow:0 0 0 3px rgba(91,214,255,.35), 0 0 0 6px rgba(121,255,167,.15);
+      animation:focusPulse 1.2s ease-out infinite;
+    }
+    textarea{min-height:140px;resize:vertical}
 
-    .actions { display: flex; align-items: center; gap: 10px; }
-    .note { color: var(--muted); font-size: 12px; }
+    .actions{display:flex;align-items:center;gap:10px}
+    .note{color:var(--muted);font-size:12px}
 
-    /* Honeypot: keep it off-screen for bots, still present in DOM */
-    .hp { position: absolute; left: -9999px; top: -9999px; height: 0; width: 0; overflow: hidden; }
+    /* Honeypot */
+    .hp{position:absolute;left:-9999px;top:-9999px;height:0;width:0;overflow:hidden}
 
     /* Toast */
-    .toast {
-      opacity: 0; transform: translateY(4px);
-      transition: opacity .35s ease, transform .35s ease;
-      background: rgba(91,214,255,0.1);
-      border: 1px solid rgba(91,214,255,0.3);
-      color: var(--ink);
-      padding: 10px 12px; border-radius: 12px; font-size: 14px;
-      margin-top: 10px;
+    .toast{
+      opacity:0;transform:translateY(6px);
+      transition:opacity .35s ease, transform .35s ease;
+      background:rgba(91,214,255,0.1);border:1px solid rgba(91,214,255,0.3);
+      color:var(--ink);padding:10px 12px;border-radius:12px;font-size:14px;margin-top:10px;
     }
-    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.show{opacity:1;transform:translateY(0)}
+
+    /* Cute floating grains behind the form */
+    .grains{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:20px}
+    .grain{
+      position:absolute;width:8px;height:12px;border-radius:6px/8px;background:#fff;opacity:.12;
+      filter:blur(.4px);
+      animation:floaty var(--t,8s) ease-in-out infinite;
+    }
+
+    /* Onigiri cursor */
+    #ogCursor{
+      position:fixed;left:0;top:0;transform:translate(-50%,-50%);
+      width:28px;height:28px;pointer-events:none;z-index:99999;
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));
+      transition:transform .06s linear;
+      mix-blend-mode:normal;
+    }
+    @media (pointer:coarse){
+      #ogCursor{display:none}
+    }
+    #ogCursor svg{display:block}
+    body.is-pressing #ogCursor{transform:translate(-50%,-50%) scale(.92)}
+
+    /* Confetti grains on submit */
+    .pop{
+      position:fixed;left:0;top:0;width:6px;height:9px;border-radius:4px/5px;pointer-events:none;
+      animation:pop 700ms ease-out forwards;
+    }
+
+    /* Keyframes */
+    @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    @keyframes slowspin{to{transform:rotate(1turn)}}
+    @keyframes wobble{16%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}100%{transform:rotate(0)}}
+    @keyframes focusPulse{
+      0%{box-shadow:0 0 0 3px rgba(91,214,255,.35), 0 0 0 6px rgba(121,255,167,.15)}
+      60%{box-shadow:0 0 0 6px rgba(91,214,255,.15), 0 0 0 10px rgba(121,255,167,.08)}
+      100%{box-shadow:0 0 0 3px rgba(91,214,255,.35), 0 0 0 6px rgba(121,255,167,.15)}
+    }
+    @keyframes pop{
+      0%{opacity:1;transform:translate(var(--x,0),var(--y,0)) scale(1)}
+      100%{opacity:0;transform:translate(calc(var(--x,0) * 2), calc(var(--y,0) - 60px)) scale(.6)}
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion:reduce){
+      .logo, .card::before, .cta:hover, input:focus, select:focus, textarea:focus,
+      .grain, #ogCursor{animation:none;transition:none}
+    }
   </style>
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
+
+  <!-- Custom onigiri cursor -->
+  <div id="ogCursor" aria-hidden="true">
+    <!-- simple rounded triangle onigiri with nori -->
+    <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- rounded triangle -->
+      <path d="M32 6
+               C28 6, 24 10, 22 14
+               L6 42
+               C4 45, 5 50, 8 52
+               C10 54, 14 56, 18 56
+               L46 56
+               C50 56, 54 54, 56 52
+               C59 50, 60 45, 58 42
+               L42 14
+               C40 10, 36 6, 32 6 Z"
+            fill="#fff" />
+      <!-- nori -->
+      <rect x="23" y="38" width="18" height="12" rx="4" fill="#091317"/>
+      <!-- subtle outline -->
+      <path d="M32 6
+               C28 6, 24 10, 22 14
+               L6 42
+               C4 45, 5 50, 8 52
+               C10 54, 14 56, 18 56
+               L46 56
+               C50 56, 54 54, 56 52
+               C59 50, 60 45, 58 42
+               L42 14
+               C40 10, 36 6, 32 6 Z"
+            stroke="rgba(0,0,0,.25)" stroke-width="2"/>
+    </svg>
+  </div>
+
   <header>
     <div class="wrap nav">
       <div class="brand" aria-label="Onigirli and the Cosmic Quest Privacy Policy and Contact Page">
@@ -110,12 +226,13 @@
         <span>Onigirli and the Cosmic Quest Privacy Policy and Contact Page</span>
       </div>
       <nav>
-        <a class="cta" id="contactTop" href="#">Contact</a>
+        <!-- Scroll to form to encourage using it -->
+        <a class="cta" id="contactTop" href="#contact">Contact</a>
       </nav>
     </div>
   </header>
 
-  <main id="content" class="wrap" role="main">
+  <main id="content" class="wrap" role="main" tabindex="-1">
     <section class="hero" aria-label="Effective date">
       <div class="meta">Effective date: <time datetime="2025-08-30">August 30, 2025</time></div>
     </section>
@@ -190,12 +307,13 @@
       <p>We may update this page to reflect app or legal changes. The <em>Effective date</em> above shows the latest revision.</p>
     </section>
 
-    <section class="card" aria-labelledby="contact">
+    <section class="card" aria-labelledby="contact" style="overflow:hidden;">
+      <div class="grains" aria-hidden="true" id="grainField"></div>
       <h2 id="contact">Contact</h2>
-      <p>For any questions, requests, or feedback, email us at <a id="contactInline" href="#">kaizolabs@gmail.com</a> or use the form below.</p>
+      <p>For questions, requests, or feedback, email <a id="contactInline" href="#">kaizolabs@gmail.com</a> or use the form.</p>
 
       <form id="contactForm" class="contact" novalidate>
-        <!-- Honeypot for bots -->
+        <!-- Honeypot -->
         <div class="hp" aria-hidden="true">
           <label for="website">Website</label>
           <input id="website" name="website" type="text" autocomplete="off" tabindex="-1" />
@@ -213,7 +331,7 @@
           </div>
           <div>
             <label for="subject">Subject (optional)</label>
-            <input id="subject" name="subject" type="text" inputmode="text" autocomplete="off" />
+            <input id="subject" name="subject" type="text" inputmode="text" autocomplete="off" placeholder="Short summary" />
           </div>
         </div>
 
@@ -223,8 +341,8 @@
         </div>
 
         <div class="actions">
-          <button type="submit" class="cta">Send</button>
-          <div class="note">This will open your email app and prefill the message.</div>
+          <button type="submit" class="cta">🍙 Send</button>
+          <div class="note">Your email app opens with a prefilled message.</div>
         </div>
 
         <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -237,67 +355,95 @@
   </footer>
 
   <script>
-    // -------- Config --------
+    // ------- Config -------
     const CONTACT_EMAIL = 'kaizolabs@gmail.com';
     const STUDIO_NAME   = 'KaizoLabs';
 
-    // -------- Small helpers --------
+    // ------- Helpers -------
     const $ = (sel) => document.querySelector(sel);
     const toastEl = $('#toast');
 
-    function showToast(msg, timeout = 2500) {
-      if (!toastEl) return;
+    function showToast(msg, timeout = 2400){
+      if(!toastEl) return;
       toastEl.textContent = msg;
       toastEl.classList.add('show');
-      window.setTimeout(() => toastEl.classList.remove('show'), timeout);
+      setTimeout(()=>toastEl.classList.remove('show'), timeout);
     }
 
-    function setStaticBits() {
+    function setStaticBits(){
       $('#year').textContent   = new Date().getFullYear();
       $('#studio').textContent = STUDIO_NAME;
 
-      // Keep both contact links in sync with the single source of truth
       const contactHref = `mailto:${CONTACT_EMAIL}`;
       const topBtn = $('#contactTop');
       const inline = $('#contactInline');
-      if (topBtn)  topBtn.href  = contactHref;
-      if (inline)  inline.href  = contactHref;
-      if (inline)  inline.textContent = CONTACT_EMAIL;
+      if(topBtn)  topBtn.href  = '#contact';
+      if(inline){
+        inline.href = contactHref;
+        inline.textContent = CONTACT_EMAIL;
+      }
     }
 
-    function bindForm() {
+    // Build some floating grain sprites in the form card background
+    function paintGrains(){
+      const field = $('#grainField');
+      if(!field) return;
+      const count = 28;
+      for(let i=0;i<count;i++){
+        const s = document.createElement('span');
+        s.className = 'grain';
+        const x = Math.random()*100, y = Math.random()*100;
+        const t = 7 + Math.random()*6;
+        s.style.left = x + '%';
+        s.style.top  = y + '%';
+        s.style.setProperty('--t', t + 's');
+        s.style.opacity = (0.08 + Math.random()*0.12).toFixed(2);
+        field.appendChild(s);
+      }
+    }
+
+    // Confetti grains at the cursor
+    function popConfetti(x,y,theme='aqua'){
+      const colors = theme==='aqua'
+        ? ['#fff','#5bd6ff','#79ffa7','#ffe072','#ff8db6']
+        : ['#fff','#e0e0e0','#9db0c6'];
+      for(let i=0;i<16;i++){
+        const el = document.createElement('span');
+        el.className = 'pop';
+        el.style.background = colors[i%colors.length];
+        el.style.left = x + 'px';
+        el.style.top  = y + 'px';
+        const ang = Math.random()*Math.PI*2;
+        const rad = 18 + Math.random()*24;
+        el.style.setProperty('--x', Math.cos(ang)*rad + 'px');
+        el.style.setProperty('--y', Math.sin(ang)*rad + 'px');
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(), 720);
+      }
+    }
+
+    function bindForm(){
       const form = $('#contactForm');
-      if (!form) return;
-
-      form.addEventListener('submit', function(e) {
+      if(!form) return;
+      form.addEventListener('submit', function(e){
         e.preventDefault();
-
-        // Honeypot
         const hp = $('#website');
-        if (hp && hp.value) {
-          // Bot likely filled this in
-          return;
-        }
+        if(hp && hp.value){ return; } // bot trap
 
-        // Simple client cooldown to reduce spam bursts
-        const now  = Date.now();
-        const last = Number(localStorage.getItem('contact_last') || 0);
-        if (now - last < 60_000) {
-          showToast('Please wait a moment before sending again.');
+        // Cooldown
+        const now = Date.now();
+        const last = Number(localStorage.getItem('contact_last')||0);
+        if(now - last < 60_000){
+          showToast('Please wait a moment and try again.');
           return;
         }
 
         const category = $('#category').value || 'Other';
-        const subject  = ($('#subject').value || '').trim() || 'No subject';
-        const message  = ($('#message').value || '').trim();
-
-        if (!message) {
-          showToast('Please enter a message.');
-          return;
-        }
+        const subject  = ($('#subject').value||'').trim() || 'No subject';
+        const message  = ($('#message').value||'').trim();
+        if(!message){ showToast('Please enter a message.'); return; }
 
         const fullSubject = `[Onigirli Support] ${category} - ${subject}`;
-        // Build body. Keep it short for mailto length limits.
         const lines = [
           `Category: ${category}`,
           '',
@@ -308,21 +454,44 @@
           `Time: ${new Date().toISOString()}`
         ];
         const body = encodeURIComponent(lines.join('\n'));
-
         const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(fullSubject)}&body=${body}`;
-        // Launch the email client
-        window.location.href = mailto;
 
-        // Update cooldown and reset form
+        // Launch mail app
+        window.location.href = mailto;
         localStorage.setItem('contact_last', String(now));
         form.reset();
         showToast('Opening your email app...');
+
+        // confetti pop at button position
+        const btn = form.querySelector('button[type="submit"]');
+        const rect = btn.getBoundingClientRect();
+        popConfetti(rect.left + rect.width/2, rect.top + rect.height/2, 'aqua');
       });
+    }
+
+    // Onigiri cursor follow
+    function bindCursor(){
+      const cursor = $('#ogCursor');
+      if(!cursor) return;
+      if(window.matchMedia('(pointer:coarse)').matches) return;
+
+      let x=0,y=0;
+      window.addEventListener('pointermove', (e)=>{
+        x = e.clientX; y = e.clientY;
+        cursor.style.left = x + 'px';
+        cursor.style.top  = y + 'px';
+      }, {passive:true});
+
+      window.addEventListener('mousedown', ()=>document.body.classList.add('is-pressing'));
+      window.addEventListener('mouseup',   ()=>document.body.classList.remove('is-pressing'));
+      window.addEventListener('mouseleave',()=>document.body.classList.remove('is-pressing'));
     }
 
     // Init
     setStaticBits();
+    paintGrains();
     bindForm();
+    bindCursor();
   </script>
 </body>
 </html>
