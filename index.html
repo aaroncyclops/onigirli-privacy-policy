@@ -48,6 +48,7 @@
       display: inline-block; padding: 10px 14px; border-radius: 12px; font-weight: 600;
       background: var(--accent); color: #00222b; border: 0;
       box-shadow: 0 8px 24px var(--ring);
+      cursor: pointer;
     }
     .cta:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
 
@@ -69,9 +70,35 @@
     .small { color: var(--muted); font-size: 13px; }
     footer { margin: 22px 0 40px; color: var(--muted); }
 
-    /* Skip link */
-    .skip-link { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
-    .skip-link:focus { position: static; width: auto; height: auto; padding: 6px 10px; background: #fff; color: #000; border-radius: 6px; }
+    /* Contact form */
+    form.contact { display: grid; gap: 12px; margin-top: 10px; }
+    .row { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+    @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
+    label { font-size: 14px; color: var(--muted); display: block; margin-bottom: 4px; }
+    input[type="text"], select, textarea {
+      width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);
+      background: var(--panel); color: var(--ink);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+
+    .actions { display: flex; align-items: center; gap: 10px; }
+    .note { color: var(--muted); font-size: 12px; }
+
+    /* Honeypot: keep it off-screen for bots, still present in DOM */
+    .hp { position: absolute; left: -9999px; top: -9999px; height: 0; width: 0; overflow: hidden; }
+
+    /* Toast */
+    .toast {
+      opacity: 0; transform: translateY(4px);
+      transition: opacity .35s ease, transform .35s ease;
+      background: rgba(91,214,255,0.1);
+      border: 1px solid rgba(91,214,255,0.3);
+      color: var(--ink);
+      padding: 10px 12px; border-radius: 12px; font-size: 14px;
+      margin-top: 10px;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body>
@@ -83,7 +110,7 @@
         <span>Onigirli and the Cosmic Quest Privacy Policy and Contact Page</span>
       </div>
       <nav>
-        <a class="cta" id="contactTop" href="mailto:aaronfimple@gmail.com">Contact</a>
+        <a class="cta" id="contactTop" href="#">Contact</a>
       </nav>
     </div>
   </header>
@@ -108,7 +135,7 @@
       <ul>
         <li><strong>Personal data you provide</strong>: We do not require an account and we do not ask you to submit personal information inside the game.</li>
         <li><strong>Device and usage data</strong>: Our partners may collect limited technical data like device identifiers, IP address, app version, approximate location, and interaction events to deliver ads, prevent fraud, and improve performance.</li>
-        <li><strong>Purchase data</strong>: In-app purchases are processed by Google Play or the Apple App Store. We do not receive your full payment details.</li>
+        <li><strong>Purchase data</strong>: In-app purchases are processed by Google Play or the Apple App Store. We do not store your payment card details.</li>
       </ul>
     </section>
 
@@ -136,7 +163,7 @@
 
     <section class="card" aria-labelledby="iap">
       <h2 id="iap">In-app purchases</h2>
-      <p>Purchases are processed by the platform stores. We receive confirmation that a purchase was completed and may store a non-identifying receipt token to restore purchases. We do not store payment card details.</p>
+      <p>Purchases are processed by the platform stores. We receive confirmation that a purchase was completed and may store a non-identifying receipt token to restore purchases.</p>
     </section>
 
     <section class="card" aria-labelledby="kids">
@@ -165,18 +192,137 @@
 
     <section class="card" aria-labelledby="contact">
       <h2 id="contact">Contact</h2>
-      <p>For any questions, requests, or feedback, email us at <a href="mailto:aaronfimple@gmail.com">aaronfimple@gmail.com</a>.</p>
+      <p>For any questions, requests, or feedback, email us at <a id="contactInline" href="#">kaizolabs@gmail.com</a> or use the form below.</p>
+
+      <form id="contactForm" class="contact" novalidate>
+        <!-- Honeypot for bots -->
+        <div class="hp" aria-hidden="true">
+          <label for="website">Website</label>
+          <input id="website" name="website" type="text" autocomplete="off" tabindex="-1" />
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+              <option value="Purchases">Purchases</option>
+              <option value="Bug Report">Bug Report</option>
+              <option value="Suggestions">Suggestions</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="subject">Subject (optional)</label>
+            <input id="subject" name="subject" type="text" inputmode="text" autocomplete="off" />
+          </div>
+        </div>
+
+        <div>
+          <label for="message">Message</label>
+          <textarea id="message" name="message" required placeholder="Tell us what you need help with..."></textarea>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="cta">Send</button>
+          <div class="note">This will open your email app and prefill the message.</div>
+        </div>
+
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      </form>
     </section>
   </main>
 
   <footer class="wrap">
-    <div>© <span id="year"></span> <span id="studio">KaizoLabs</span>. All rights reserved.</div>
+    <div>© <span id="year"></span> <span id="studio"></span>. All rights reserved.</div>
   </footer>
 
   <script>
-    // Small helpers
-    document.getElementById('year').textContent = new Date().getFullYear();
-    document.getElementById('studio').textContent = 'KaizoLabs';
+    // -------- Config --------
+    const CONTACT_EMAIL = 'kaizolabs@gmail.com';
+    const STUDIO_NAME   = 'KaizoLabs';
+
+    // -------- Small helpers --------
+    const $ = (sel) => document.querySelector(sel);
+    const toastEl = $('#toast');
+
+    function showToast(msg, timeout = 2500) {
+      if (!toastEl) return;
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      window.setTimeout(() => toastEl.classList.remove('show'), timeout);
+    }
+
+    function setStaticBits() {
+      $('#year').textContent   = new Date().getFullYear();
+      $('#studio').textContent = STUDIO_NAME;
+
+      // Keep both contact links in sync with the single source of truth
+      const contactHref = `mailto:${CONTACT_EMAIL}`;
+      const topBtn = $('#contactTop');
+      const inline = $('#contactInline');
+      if (topBtn)  topBtn.href  = contactHref;
+      if (inline)  inline.href  = contactHref;
+      if (inline)  inline.textContent = CONTACT_EMAIL;
+    }
+
+    function bindForm() {
+      const form = $('#contactForm');
+      if (!form) return;
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Honeypot
+        const hp = $('#website');
+        if (hp && hp.value) {
+          // Bot likely filled this in
+          return;
+        }
+
+        // Simple client cooldown to reduce spam bursts
+        const now  = Date.now();
+        const last = Number(localStorage.getItem('contact_last') || 0);
+        if (now - last < 60_000) {
+          showToast('Please wait a moment before sending again.');
+          return;
+        }
+
+        const category = $('#category').value || 'Other';
+        const subject  = ($('#subject').value || '').trim() || 'No subject';
+        const message  = ($('#message').value || '').trim();
+
+        if (!message) {
+          showToast('Please enter a message.');
+          return;
+        }
+
+        const fullSubject = `[Onigirli Support] ${category} - ${subject}`;
+        // Build body. Keep it short for mailto length limits.
+        const lines = [
+          `Category: ${category}`,
+          '',
+          message,
+          '',
+          '---',
+          `From: ${STUDIO_NAME} website`,
+          `Time: ${new Date().toISOString()}`
+        ];
+        const body = encodeURIComponent(lines.join('\n'));
+
+        const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(fullSubject)}&body=${body}`;
+        // Launch the email client
+        window.location.href = mailto;
+
+        // Update cooldown and reset form
+        localStorage.setItem('contact_last', String(now));
+        form.reset();
+        showToast('Opening your email app...');
+      });
+    }
+
+    // Init
+    setStaticBits();
+    bindForm();
   </script>
 </body>
 </html>
