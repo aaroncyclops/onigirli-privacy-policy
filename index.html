@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -21,11 +22,7 @@
       --ring:rgba(255,122,214,.35);
 
       --pink-2:#ffa5e6;
-      --pink-3:#ffdaf5;
       --purple:#b675ff;         /* selection hue */
-      --good:#79ffa7;
-      --rose:#ff8db6;
-      --gold:#ffe072;
     }
 
     *{box-sizing:border-box}
@@ -36,15 +33,16 @@
         radial-gradient(1200px 800px at 70% -10%, #25182e 0%, var(--bg) 55%);
       color:var(--ink);
       line-height:1.6;
-      cursor:none; /* we render the onigiri cursor */
+      cursor:none; /* custom cursor */
     }
     @media (pointer:coarse){ body{cursor:auto} } /* show OS cursor on touch */
 
-    /* Text selection */
-    ::selection{
-      background: rgba(182,117,255,.45);
-      color:#27002b;
-    }
+    /* Text selection: remove system highlight for document content */
+    ::selection{ background: transparent; color: inherit; }
+    ::-moz-selection{ background: transparent; color: inherit; }
+    /* Keep inputs/textarea readable: custom purple selection */
+    input::selection, textarea::selection{ background: rgba(182,117,255,.35); color:#1a0d22; }
+
     /* Overlay pills for rounded selection edges */
     #selOverlay{position:fixed;inset:0;pointer-events:none;z-index:9998}
     .selpill{
@@ -60,6 +58,7 @@
     header{
       position:sticky;top:0;z-index:10;
       backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
       background:linear-gradient(180deg, rgba(20,17,26,.8), rgba(20,17,26,.4));
       border-bottom:1px solid rgba(255,255,255,0.08);
     }
@@ -89,13 +88,9 @@
       border-radius:22px;padding:18px 20px;margin:14px 0;
       box-shadow:0 10px 30px rgba(0,0,0,0.35), 0 2px 0 rgba(255,255,255,0.05) inset;
     }
-    .card::before{
-      content:"";position:absolute;inset:-1px;border-radius:24px;
-      background:conic-gradient(from 220deg, rgba(255,122,214,.25), transparent 50%, rgba(182,117,255,.25));
-      mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor; mask-composite: exclude;
-      padding:1px;pointer-events:none;opacity:.35;animation:slowspin 12s linear infinite;
-    }
+    /* Remove rotating frame animation per request */
+    .card::before{display:none}
+
     .card h2{margin:6px 0 6px;font-size:20px}
     .card p,.card li{color:#f1e6ff}
     .card ul{padding-left:18px;margin:6px 0}
@@ -146,7 +141,7 @@
 
     /* Custom select (Category) */
     .select{position:relative}
-    .select [data-native]{display:none} /* keep hidden native select for syncing */
+    .select [data-native]{display:none}
     .select-btn{
       width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;
       padding:12px 14px;border-radius:14px;background:var(--panel);color:var(--ink);
@@ -157,18 +152,24 @@
     .select-arrow{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid var(--ink);opacity:.7}
     .select.open .select-arrow{transform:rotate(180deg)}
     .select-list{
-      position:absolute;z-index:20;left:0;right:0;top:calc(100% + 8px);
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
+      position:absolute;z-index:21;left:0;right:0;top:calc(100% + 8px);
+      background:rgba(20,17,26,.6);
       border:1px solid rgba(255,255,255,0.1);border-radius:14px;overflow:auto;max-height:240px;
       box-shadow:0 14px 40px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.05) inset;
       padding:6px;display:none;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); /* blur inside the dropdown */
     }
     .select.open .select-list{display:block;animation:menuIn .12s ease}
-    .select-option{
-      padding:10px 12px;border-radius:10px;cursor:pointer;color:#f1e6ff;
-    }
+    .select-option{padding:10px 12px;border-radius:10px;cursor:pointer;color:#f1e6ff}
     .select-option[aria-selected="true"]{background:rgba(255,122,214,.18)}
     .select-option:hover{background:rgba(182,117,255,.18)}
+
+    /* Veil behind select when open (blurs whole card & page) */
+    .select-veil{
+      position:fixed;inset:0;z-index:20; /* below list (21) but above content */
+      background:rgba(10,8,12,.25);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    }
 
     /* Onigiri cursor */
     #ogCursor{
@@ -188,13 +189,10 @@
     }
 
     /* Canvas background */
-    #bg3d{
-      position:fixed;inset:0;z-index:-2;display:block;
-    }
+    #bg3d{ position:fixed;inset:0;z-index:-2;display:block; }
 
     /* Animations */
     @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-    @keyframes slowspin{to{transform:rotate(1turn)}}
     @keyframes wobble{16%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}100%{transform:rotate(0)}}
     @keyframes focusPulse{
       0%{box-shadow:0 0 0 3px rgba(255,122,214,.35), 0 0 0 6px rgba(182,117,255,.15)}
@@ -208,28 +206,28 @@
     @keyframes menuIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 
     /* Reduced motion */
-    @media (prefers-reduced-motion:reduce){
-      .logo,.card::before,.select.open .select-list{animation:none}
-    }
+    @media (prefers-reduced-motion:reduce){ .logo{animation:none} }
   </style>
+
 </head>
 <body>
-  <!-- purple rounded selection overlay -->
+  <!-- selection overlay -->
   <div id="selOverlay" aria-hidden="true"></div>
 
-  <!-- canvas background with rotating onigiri -->
-  <canvas id="bg3d"></canvas>
+  <!-- canvas background with rounded 3D onigiri triangles (no black nori) -->
+
+<canvas id="bg3d"></canvas>
 
   <!-- custom onigiri cursor -->
+
   <div id="ogCursor" aria-hidden="true">
     <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M32 6 C28 6, 24 10, 22 14 L6 42 C4 45, 5 50, 8 52 C10 54, 14 56, 18 56 L46 56 C50 56, 54 54, 56 52 C59 50, 60 45, 58 42 L42 14 C40 10, 36 6, 32 6 Z" fill="#fff"/>
-      <rect x="23" y="38" width="18" height="12" rx="4" fill="#0e0b12"/>
-      <path d="M32 6 C28 6, 24 10, 22 14 L6 42 C4 45, 5 50, 8 52 C10 54, 14 56, 18 56 L46 56 C50 56, 54 54, 56 52 C59 50, 60 45, 58 42 L42 14 C40 10, 36 6, 32 6 Z" stroke="rgba(0,0,0,.25)" stroke-width="2"/>
+      <path d="M32 6 C28 6, 24 10, 22 14 L6 42 C4 45, 5 50, 8 52 C10 54, 14 56, 18 56 L46 56 C50 56, 54 54, 56 52 C59 50, 60 45, 58 42 L42 14 C40 10, 36 6, 32 6 Z" stroke="rgba(0,0,0,.18)" stroke-width="2"/>
     </svg>
   </div>
 
-  <a class="skip-link" href="#content">Skip to content</a>
+<a class="skip-link" href="#content">Skip to content</a>
 
   <header>
     <div class="wrap nav">
@@ -248,133 +246,136 @@
       <div class="meta">Effective date: <time datetime="2025-08-30">August 30, 2025</time></div>
     </section>
 
-    <section class="card" aria-labelledby="who">
-      <h2 id="who">Who we are</h2>
-      <p><strong>Onigirli and the Cosmic Quest</strong> is developed and published by <em>KaizoLabs</em> ("we," "us," or "our"). This page explains how the game handles information.</p>
-    </section>
+```
+<section class="card" aria-labelledby="who">
+  <h2 id="who">Who we are</h2>
+  <p><strong>Onigirli and the Cosmic Quest</strong> is developed and published by <em>KaizoLabs</em> ("we," "us," or "our"). This page explains how the game handles information.</p>
+</section>
 
-    <section class="card" aria-labelledby="scope">
-      <h2 id="scope">Scope</h2>
-      <p>This policy applies to the Onigirli and the Cosmic Quest mobile app on Android and iOS, any in-game features such as ads and in-app purchases, and related support pages we operate.</p>
-    </section>
+<section class="card" aria-labelledby="scope">
+  <h2 id="scope">Scope</h2>
+  <p>This policy applies to the Onigirli and the Cosmic Quest mobile app on Android and iOS, any in-game features such as ads and in-app purchases, and related support pages we operate.</p>
+</section>
 
-    <section class="card" aria-labelledby="collection">
-      <h2 id="collection">What we collect</h2>
-      <ul>
-        <li><strong>Personal data you provide</strong>: We do not require an account and we do not ask you to submit personal information inside the game.</li>
-        <li><strong>Device and usage data</strong>: Our partners may collect limited technical data like device identifiers, IP address, app version, approximate location, and interaction events to deliver ads, prevent fraud, and improve performance.</li>
-        <li><strong>Purchase data</strong>: In-app purchases are processed by Google Play or the Apple App Store. We do not store your payment card details.</li>
-      </ul>
-    </section>
+<section class="card" aria-labelledby="collection">
+  <h2 id="collection">What we collect</h2>
+  <ul>
+    <li><strong>Personal data you provide</strong>: We do not require an account and we do not ask you to submit personal information inside the game.</li>
+    <li><strong>Device and usage data</strong>: Our partners may collect limited technical data like device identifiers, IP address, app version, approximate location, and interaction events to deliver ads, prevent fraud, and improve performance.</li>
+    <li><strong>Purchase data</strong>: In-app purchases are processed by Google Play or the Apple App Store. We do not store your payment card details.</li>
+  </ul>
+</section>
 
-    <section class="card" aria-labelledby="use">
-      <h2 id="use">How we use data</h2>
-      <ul>
-        <li>To operate the app and its features.</li>
-        <li>To show non-personalized or contextual ads where available, and measure their performance.</li>
-        <li>To detect, prevent, and address technical issues and abuse.</li>
-        <li>To process optional in-app purchases.</li>
-      </ul>
-    </section>
+<section class="card" aria-labelledby="use">
+  <h2 id="use">How we use data</h2>
+  <ul>
+    <li>To operate the app and its features.</li>
+    <li>To show non-personalized or contextual ads where available, and measure their performance.</li>
+    <li>To detect, prevent, and address technical issues and abuse.</li>
+    <li>To process optional in-app purchases.</li>
+  </ul>
+</section>
 
-    <section class="card" aria-labelledby="partners">
-      <h2 id="partners">Third-party partners</h2>
-      <p>We integrate services that may collect data under their own policies. Review their notices here:</p>
-      <ul>
-        <li><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Play services</a></li>
-        <li><a href="https://developers.google.com/admob/ump/android/overview" target="_blank" rel="noopener">Google UMP (consent on Android)</a></li>
-        <li><a href="https://ironsrc.com/privacy-policy/" target="_blank" rel="noopener">Unity LevelPlay / ironSource</a></li>
-        <li><a href="https://unity.com/legal/privacy-policy" target="_blank" rel="noopener">Unity</a></li>
-        <li><a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">Apple App Store</a></li>
-      </ul>
-    </section>
+<section class="card" aria-labelledby="partners">
+  <h2 id="partners">Third-party partners</h2>
+  <p>We integrate services that may collect data under their own policies. Review their notices here:</p>
+  <ul>
+    <li><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Play services</a></li>
+    <li><a href="https://developers.google.com/admob/ump/android/overview" target="_blank" rel="noopener">Google UMP (consent on Android)</a></li>
+    <li><a href="https://ironsrc.com/privacy-policy/" target="_blank" rel="noopener">Unity LevelPlay / ironSource</a></li>
+    <li><a href="https://unity.com/legal/privacy-policy" target="_blank" rel="noopener">Unity</a></li>
+    <li><a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">Apple App Store</a></li>
+  </ul>
+</section>
 
-    <section class="card" aria-labelledby="iap">
-      <h2 id="iap">In-app purchases</h2>
-      <p>Purchases are processed by the platform stores. We receive confirmation that a purchase was completed and may store a non-identifying receipt token to restore purchases.</p>
-    </section>
+<section class="card" aria-labelledby="iap">
+  <h2 id="iap">In-app purchases</h2>
+  <p>Purchases are processed by the platform stores. We receive confirmation that a purchase was completed and may store a non-identifying receipt token to restore purchases.</p>
+</section>
 
-    <section class="card" aria-labelledby="kids">
-      <h2 id="kids">Children</h2>
-      <p>The game is intended for a general audience. It is not directed to children under 13. If you believe a child provided personal data to our partners, contact us and we will work with them to address the issue.</p>
-    </section>
+<section class="card" aria-labelledby="kids">
+  <h2 id="kids">Children</h2>
+  <p>The game is intended for a general audience. It is not directed to children under 13. If you believe a child provided personal data to our partners, contact us and we will work with them to address the issue.</p>
+</section>
 
-    <section class="card" aria-labelledby="rights">
-      <h2 id="rights">Your choices</h2>
-      <ul>
-        <li><strong>Ads</strong>: Your device settings and platform consent dialogs control personalized advertising where available.</li>
-        <li><strong>Opt-out</strong>: You can limit ad tracking in system settings on iOS and Android.</li>
-        <li><strong>Access or delete</strong>: Contact us and we will coordinate with partners as appropriate.</li>
-      </ul>
-    </section>
+<section class="card" aria-labelledby="rights">
+  <h2 id="rights">Your choices</h2>
+  <ul>
+    <li><strong>Ads</strong>: Your device settings and platform consent dialogs control personalized advertising where available.</li>
+    <li><strong>Opt-out</strong>: You can limit ad tracking in system settings on iOS and Android.</li>
+    <li><strong>Access or delete</strong>: Contact us and we will coordinate with partners as appropriate.</li>
+  </ul>
+</section>
 
-    <section class="card" aria-labelledby="security">
-      <h2 id="security">Security</h2>
-      <p>We take reasonable steps to protect data handled through our integrations. No method of transmission or storage is perfectly secure.</p>
-    </section>
+<section class="card" aria-labelledby="security">
+  <h2 id="security">Security</h2>
+  <p>We take reasonable steps to protect data handled through our integrations. No method of transmission or storage is perfectly secure.</p>
+</section>
 
-    <section class="card" aria-labelledby="changes">
-      <h2 id="changes">Changes to this policy</h2>
-      <p>We may update this page to reflect app or legal changes. The <em>Effective date</em> above shows the latest revision.</p>
-    </section>
+<section class="card" aria-labelledby="changes">
+  <h2 id="changes">Changes to this policy</h2>
+  <p>We may update this page to reflect app or legal changes. The <em>Effective date</em> above shows the latest revision.</p>
+</section>
 
-    <section class="card" aria-labelledby="contact" style="overflow:visible;">
-      <h2 id="contact">Contact</h2>
-      <p>For questions, requests, or feedback, email <a id="contactInline" href="#">kaizolabs@gmail.com</a> or use the form.</p>
+<section class="card" aria-labelledby="contact" style="overflow:visible;">
+  <h2 id="contact">Contact</h2>
+  <p>For questions, requests, or feedback, email <a id="contactInline" href="#">kaizolabs@gmail.com</a> or use the form.</p>
 
-      <form id="contactForm" class="contact" novalidate>
-        <!-- Honeypot -->
-        <div class="hp" aria-hidden="true">
-          <label for="website">Website</label>
-          <input id="website" name="website" type="text" autocomplete="off" tabindex="-1" />
+  <form id="contactForm" class="contact" novalidate>
+    <!-- Honeypot -->
+    <div class="hp" aria-hidden="true">
+      <label for="website">Website</label>
+      <input id="website" name="website" type="text" autocomplete="off" tabindex="-1" />
+    </div>
+
+    <div class="row">
+      <div>
+        <label id="catLabel">Category</label>
+
+        <!-- Custom select -->
+        <div class="select" id="catSelect">
+          <select id="category" name="category" aria-hidden="true" tabindex="-1" data-native>
+            <option value="Purchases" selected>Purchases</option>
+            <option value="Bug Report">Bug Report</option>
+            <option value="Suggestions">Suggestions</option>
+            <option value="Other">Other</option>
+          </select>
+
+          <button type="button" class="select-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="catLabel catBtn">
+            <span id="catBtn">Purchases</span>
+            <span class="select-arrow" aria-hidden="true"></span>
+          </button>
+
+          <ul class="select-list" role="listbox" aria-labelledby="catLabel" tabindex="-1">
+            <li class="select-option" role="option" data-value="Purchases" aria-selected="true">Purchases</li>
+            <li class="select-option" role="option" data-value="Bug Report">Bug Report</li>
+            <li class="select-option" role="option" data-value="Suggestions">Suggestions</li>
+            <li class="select-option" role="option" data-value="Other">Other</li>
+          </ul>
         </div>
+      </div>
 
-        <div class="row">
-          <div>
-            <label id="catLabel">Category</label>
+      <div>
+        <label for="subject">Subject (optional)</label>
+        <input id="subject" name="subject" type="text" inputmode="text" autocomplete="off" placeholder="Short summary" />
+      </div>
+    </div>
 
-            <!-- Custom select -->
-            <div class="select" id="catSelect">
-              <select id="category" name="category" aria-hidden="true" tabindex="-1" data-native>
-                <option value="Purchases" selected>Purchases</option>
-                <option value="Bug Report">Bug Report</option>
-                <option value="Suggestions">Suggestions</option>
-                <option value="Other">Other</option>
-              </select>
+    <div>
+      <label for="message">Message</label>
+      <textarea id="message" name="message" required placeholder="Tell us what you need help with..."></textarea>
+    </div>
 
-              <button type="button" class="select-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="catLabel catBtn">
-                <span id="catBtn">Purchases</span>
-                <span class="select-arrow" aria-hidden="true"></span>
-              </button>
+    <div class="actions">
+      <button type="submit" class="cta">🍙 Send</button>
+      <div class="note">Your email app opens with a prefilled message.</div>
+    </div>
 
-              <ul class="select-list" role="listbox" aria-labelledby="catLabel" tabindex="-1">
-                <li class="select-option" role="option" data-value="Purchases" aria-selected="true">Purchases</li>
-                <li class="select-option" role="option" data-value="Bug Report">Bug Report</li>
-                <li class="select-option" role="option" data-value="Suggestions">Suggestions</li>
-                <li class="select-option" role="option" data-value="Other">Other</li>
-              </ul>
-            </div>
-          </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </form>
+</section>
+```
 
-          <div>
-            <label for="subject">Subject (optional)</label>
-            <input id="subject" name="subject" type="text" inputmode="text" autocomplete="off" placeholder="Short summary" />
-          </div>
-        </div>
-
-        <div>
-          <label for="message">Message</label>
-          <textarea id="message" name="message" required placeholder="Tell us what you need help with..."></textarea>
-        </div>
-
-        <div class="actions">
-          <button type="submit" class="cta">🍙 Send</button>
-          <div class="note">Your email app opens with a prefilled message.</div>
-        </div>
-
-        <div id="toast" class="toast" role="status" aria-live="polite"></div>
-      </form>
-    </section>
   </main>
 
   <footer class="wrap">
@@ -466,7 +467,7 @@
       });
     }
 
-    // ----- Custom select (accessible-ish) -----
+    // ----- Custom select with blur veil -----
     function bindCustomSelect(){
       const root = $('#catSelect'); if(!root) return;
       const native = root.querySelector('[data-native]');
@@ -474,15 +475,30 @@
       const list = root.querySelector('.select-list');
       const options = Array.from(list.querySelectorAll('.select-option'));
       const btnLabel = root.querySelector('#catBtn');
+      let veil = null;
 
-      function open(){ root.classList.add('open'); btn.setAttribute('aria-expanded','true'); list.focus(); }
-      function close(){ root.classList.remove('open'); btn.setAttribute('aria-expanded','false'); btn.focus(); }
+      function open(){
+        // create veil behind dropdown
+        veil = document.createElement('div');
+        veil.className = 'select-veil';
+        document.body.appendChild(veil);
+        veil.addEventListener('click', close);
+        root.classList.add('open');
+        btn.setAttribute('aria-expanded','true');
+        list.focus();
+      }
+      function close(){
+        root.classList.remove('open');
+        btn.setAttribute('aria-expanded','false');
+        if(veil){ veil.remove(); veil = null; }
+        btn.focus();
+      }
       function choose(opt){
         options.forEach(o=>o.setAttribute('aria-selected','false'));
         opt.setAttribute('aria-selected','true');
         const val = opt.getAttribute('data-value');
         btnLabel.textContent = val;
-        native.value = val; // keep the hidden select in sync
+        native.value = val;
         close();
       }
       btn.addEventListener('click', (e)=>{
@@ -491,7 +507,6 @@
       });
       options.forEach(opt=>{
         opt.addEventListener('click', ()=>choose(opt));
-        opt.addEventListener('mousemove', ()=>opt.focus && opt.focus());
       });
       list.addEventListener('keydown', (e)=>{
         const idx = options.findIndex(o=>o.getAttribute('aria-selected')==='true');
@@ -541,7 +556,7 @@
       window.addEventListener('resize', ()=>setTimeout(draw,0));
     }
 
-    // ----- Canvas background: rotating onigiri in faux-3D -----
+    // ----- Canvas background: rounded 3D triangles (no squares, no black nori) -----
     function startCanvas(){
       const canvas = document.getElementById('bg3d');
       if(!canvas) return;
@@ -558,26 +573,16 @@
       }
       resize(); window.addEventListener('resize', resize);
 
-      // 3D helpers
       const fov = 500; // perspective
       function rotX(p,a){ const s=Math.sin(a), c=Math.cos(a); const [x,y,z]=p; return [x, y*c - z*s, y*s + z*c]; }
       function rotY(p,a){ const s=Math.sin(a), c=Math.cos(a); const [x,y,z]=p; return [x*c + z*s, y, -x*s + z*c]; }
-      function project(p){
-        const [x,y,z]=p;
-        const d = fov/(z+fov);
-        return [x*d, y*d, d];
-      }
+      function project(p){ const [x,y,z]=p; const d = fov/(z+fov); return [x*d, y*d, d]; }
 
-      // Onigiri geometry in unit space
-      const tri = [
-        [0,-1,0],
-        [-0.92,0.86,0],
-        [0.92,0.86,0]
-      ];
-      const noriRect = { x:-0.35, y:0.35, w:0.7, h:0.28 };
+      // Triangle points in unit space
+      const tri = [ [0,-1,0], [-0.92,0.86,0], [0.92,0.86,0] ];
 
       const count = 24;
-      const balls = Array.from({length:count}, (_,i)=>({
+      const items = Array.from({length:count}, ()=>({
         x:(Math.random()-0.5)*1200,
         y:(Math.random()-0.5)*800,
         z:  Math.random()*800 + 200,
@@ -587,7 +592,7 @@
         rvx:(Math.random()*0.6+0.2)*0.0015 * (Math.random()<.5?-1:1),
         rvy:(Math.random()*0.6+0.2)*0.0012 * (Math.random()<.5?-1:1),
         drift:(Math.random()*0.4+0.2),
-        hue: 300 + Math.random()*40 // pinkish lighting hue
+        hue: 300 + Math.random()*40
       }));
 
       let last=0;
@@ -595,32 +600,20 @@
         requestAnimationFrame(tick);
         const dt = (t-last)||16; last=t;
 
-        // bg gradient
+        // BG gradient only (removed rotating squares/stars)
         const g = ctx.createLinearGradient(0,0,0,H);
         g.addColorStop(0,'#1b1123');
         g.addColorStop(1,'#0b0a0e');
         ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
 
-        // subtle stars
-        ctx.globalAlpha = 0.08;
-        for(let i=0;i<40;i++){
-          const x = (i*97 % W), y = (i*151 % H);
-          ctx.fillRect(x,y,1,1);
-        }
-        ctx.globalAlpha = 1;
-
-        // draw each onigiri
-        for(const b of balls){
+        for(const b of items){
           b.rx += b.rvx * dt;
           b.ry += b.rvy * dt;
-          // gentle float
           const fy = Math.sin(t*0.001*b.drift)*12;
           const pos = [b.x, b.y+fy, b.z];
 
-          // project center
           const center2D = project([pos[0], pos[1], pos[2]]);
           const scale = center2D[2] * b.s;
-
           const tx = cx + center2D[0];
           const ty = cy + center2D[1];
 
@@ -628,43 +621,49 @@
           ctx.translate(tx,ty);
           ctx.scale(scale,scale);
 
-          // lighting
-          const rim = 'rgba(255,255,255,.85)';
-          const face = 'rgba(255,255,255,.95)';
-          const stroke = 'rgba(0,0,0,.25)';
-
-          // rotate + draw triangle face
-          function tpt(p){
-            return project(rotY(rotX(p, b.rx), b.ry));
-          }
+          function tpt(p){ return project(rotY(rotX(p, b.rx), b.ry)); }
           const A = tpt(tri[0]), B = tpt(tri[1]), C = tpt(tri[2]);
 
-          // drop shadow
+          // rounded triangle path helper
+          function roundedTriPath(A,B,C,r){
+            const pts = [A,B,C].map(p=>({x:p[0],y:p[1]}));
+            function corner(a,b,c){
+              const abx=b.x-a.x, aby=b.y-a.y, abLen=Math.hypot(abx,aby);
+              const cbx=b.x-c.x, cby=b.y-c.y, cbLen=Math.hypot(cbx,cby);
+              const rab = r/abLen, rcb = r/cbLen;
+              const p1={x:b.x - abx*rab, y:b.y - aby*rab};
+              const p2={x=b.x - cbx*rcb, y:b.y - cby*rcb};
+              return {p1,p2,b};
+            }
+            const k0=corner(C, A, B);
+            const k1=corner(A, B, C);
+            const k2=corner(B, C, A);
+            ctx.beginPath();
+            ctx.moveTo(k0.p2.x,k0.p2.y);
+            ctx.lineTo(k1.p1.x,k1.p1.y);
+            ctx.quadraticCurveTo(k1.b.x,k1.b.y,k1.p2.x,k1.p2.y);
+            ctx.lineTo(k2.p1.x,k2.p1.y);
+            ctx.quadraticCurveTo(k2.b.x,k2.b.y,k2.p2.x,k2.p2.y);
+            ctx.lineTo(k0.p1.x,k0.p1.y);
+            ctx.quadraticCurveTo(k0.b.x,k0.b.y,k0.p2.x,k0.p2.y);
+          }
+
+          // draw face (soft white, pink tint, no black parts)
           ctx.save();
-          ctx.shadowColor = 'rgba(0,0,0,.45)';
-          ctx.shadowBlur = 16; ctx.shadowOffsetY = 6;
-          ctx.beginPath();
-          ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.lineTo(C[0],C[1]); ctx.closePath();
-          ctx.fillStyle = face; ctx.fill();
+          ctx.shadowColor = 'rgba(0,0,0,.35)';
+          ctx.shadowBlur = 14; ctx.shadowOffsetY = 6;
+          roundedTriPath(A,B,C,0.18);
+          const lg = ctx.createLinearGradient(0, -1, 0, 1);
+          lg.addColorStop(0, `hsla(${b.hue},100%,92%,.85)`);
+          lg.addColorStop(1, `hsla(${b.hue+20},100%,80%,.55)`);
+          ctx.fillStyle = lg; ctx.fill();
           ctx.restore();
 
-          // soft rim
-          ctx.strokeStyle = stroke; ctx.lineWidth = 0.06;
-          ctx.beginPath();
-          ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.lineTo(C[0],C[1]); ctx.closePath();
-          ctx.stroke();
+          // delicate rim (very subtle, not black)
+          ctx.lineWidth = 0.05;
+          ctx.strokeStyle = 'rgba(255,255,255,.35)';
+          roundedTriPath(A,B,C,0.18); ctx.stroke();
 
-          // tint
-          const lg = ctx.createLinearGradient(0, -1, 0, 1);
-          lg.addColorStop(0, `hsla(${b.hue},100%,85%,.20)`);
-          lg.addColorStop(1, `hsla(${b.hue+20},100%,75%,.05)`);
-          ctx.fillStyle = lg;
-          ctx.fill();
-
-          // nori (always on face plane, looks cute)
-          ctx.fillStyle = '#0e0b12';
-          const nr = noriRect;
-          ctx.fillRect(nr.x, nr.y, nr.w, nr.h);
           ctx.restore();
         }
       }
@@ -672,19 +671,17 @@
     }
 
     // ----- Init selection overlay -----
-    function bindSelectionOverlayInit(){
+    function init(){
+      setStaticBits();
+      bindForm();
+      bindCustomSelect();
+      bindCursor();
       bindSelectionOverlay();
+      startCanvas();
     }
+    init();
 
-    // ----- Init all -----
-    setStaticBits();
-    bindForm();
-    bindCustomSelect();
-    bindCursor();
-    startCanvas();
-    bindSelectionOverlayInit();
-
-    // ----- Onigiri cursor position -----
+    // Move custom cursor with pointer
     (function(){
       const cursor = document.getElementById('ogCursor');
       if(!cursor || window.matchMedia('(pointer:coarse)').matches) return;
@@ -694,5 +691,6 @@
       }, {passive:true});
     })();
   </script>
+
 </body>
 </html>
